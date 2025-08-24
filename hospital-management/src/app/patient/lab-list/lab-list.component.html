@@ -1,0 +1,31 @@
+<div class="container py-4">
+  <h2 class="text-center mb-4">Book a Lab Test</h2>
+
+  <!-- Category Filter -->
+  <div class="mb-3">
+    <select class="form-select w-50 mx-auto" [(ngModel)]="selectedCategory">
+      <option value="">All Categories</option>
+      <option value="Pathology">Pathology</option>
+      <option value="Radiology">Radiology</option>
+    </select>
+  </div>
+
+  <!-- Lab Test Cards -->
+  <div class="row">
+    <div class="col-md-3 mb-4" *ngFor="let test of filteredTests">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{test.name}}</h5>
+          <p class="card-text">
+            <strong>Category:</strong> {{test.category}} <br>
+            <strong>Price:</strong> ₹{{test.price}}
+          </p>
+          <button class="btn btn-success w-100" [routerLink]="['/patient/labs/book', test.id]">
+  Book Test
+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a routerLink="/patient/lab-cart" class="btn btn-success mt-3">Go to Cart</a>
+</div>

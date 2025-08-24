@@ -1,0 +1,41 @@
+<div class="container py-4" *ngIf="test">
+  <h2 class="mb-4">Book Slot for {{ test.name }}</h2>
+
+  <div class="card shadow-sm p-3">
+    <p><strong>Category:</strong> {{ test.category }}</p>
+    <p><strong>Price:</strong> ₹{{ test.price }}</p>
+
+    <form>
+      <!-- Date -->
+      <div class="mb-3">
+        <label class="form-label">Select Date</label>
+        <input type="date" class="form-control" [(ngModel)]="booking.date" name="date" required>
+      </div>
+
+      <!-- Time Slot -->
+      <div class="mb-3">
+        <label class="form-label">Select Time Slot</label>
+        <select class="form-select" [(ngModel)]="booking.timeSlot" name="timeSlot" required>
+          <option value="">--Choose--</option>
+          <option value="Morning (8AM - 12PM)">Morning (8AM - 12PM)</option>
+          <option value="Afternoon (12PM - 4PM)">Afternoon (12PM - 4PM)</option>
+          <option value="Evening (4PM - 8PM)">Evening (4PM - 8PM)</option>
+        </select>
+      </div>
+
+      <!-- Type -->
+      <div class="mb-3">
+        <label class="form-label">Collection Type</label>
+        <select class="form-select" [(ngModel)]="booking.type" name="type">
+          <option value="Lab Visit">Lab Visit</option>
+          <option value="Home Collection">Home Collection</option>
+        </select>
+      </div>
+
+      <!-- Confirm -->
+      <button type="button" class="btn btn-success w-100" (click)="confirmBooking()">
+        Confirm Booking
+      </button>
+    </form>
+  </div>
+</div>

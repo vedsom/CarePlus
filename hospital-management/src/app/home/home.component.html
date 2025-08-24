@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarePlus Hospital</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 100px 0;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 60%;
+            height: 200%;
+            background: linear-gradient(45deg, rgba(33, 150, 243, 0.03), rgba(76, 175, 80, 0.02));
+            border-radius: 50%;
+            z-index: -1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #1976d2;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+        }
+
+        .hero-buttons .btn {
+            padding: 15px 35px;
+            font-weight: 500;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 10px 10px 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            border: none;
+            box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(25, 118, 210, 0.4);
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+        }
+
+        .btn-outline-success {
+            color: #4caf50;
+            border: 2px solid #4caf50;
+            background: transparent;
+        }
+
+        .btn-outline-success:hover {
+            background: #4caf50;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Section Styling */
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #333;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #1976d2, #4caf50);
+            border-radius: 2px;
+        }
+
+        /* Card Styling */
+        .custom-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .custom-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Testimonials */
+        .testimonial-card {
+            background: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-size: 4rem;
+            color: #e3f2fd;
+            font-family: serif;
+        }
+
+        .testimonial-message {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .testimonial-author {
+            color: #1976d2;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Doctor Cards */
+        .doctor-card {
+            background: white;
+        }
+
+        .doctor-card img {
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .doctor-card .card-body {
+            padding: 25px;
+        }
+
+        .doctor-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .doctor-specialty {
+            color: #4caf50;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        /* Why Choose Us */
+        .feature-card {
+            background: white;
+            padding: 40px 30px;
+            text-align: center;
+            height: 100%;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.1), rgba(76, 175, 80, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.15), rgba(76, 175, 80, 0.15));
+        }
+
+        .feature-icon i {
+            font-size: 2rem;
+            color: #1976d2;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feature-desc {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Background Sections */
+        .bg-light-custom {
+            background: #fafafa;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .hero-buttons .btn {
+                display: block;
+                margin: 10px auto;
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HERO SECTION -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center hero-content">
+                    <h1 class="hero-title fade-in-up">Welcome to CarePlus Hospital</h1>
+                    <p class="hero-subtitle fade-in-up">Your health is our priority. Experience world-class medical care with compassion and expertise.</p>
+                    <div class="hero-buttons fade-in-up">
+                        <a routerLink="/patient/doctors" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calendar-check me-2"></i>Book Appointment
+                        </a>
+                        <a routerLink="/patient/labs" class="btn btn-outline-success btn-lg">
+                            <i class="fas fa-flask me-2"></i>Book Lab Tests
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TESTIMONIALS SECTION -->
+    <div class="section">
+        <div class="container">
+            <h2 class="section-title">What Our Patients Say</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4" *ngFor="let t of testimonials">
+                    <div class="custom-card testimonial-card">
+                        <p class="testimonial-message">{{t.message}}</p>
+                        <h6 class="testimonial-author"> {{t.name}}</h6>
+                    </div>
+                </div>  
+            </div>
+        </div>
+    </div>
+
+    <!-- SPECIALIST DOCTORS SECTION -->
+    <div class="section bg-light-custom">
+        <div class="container">
+            <h2 class="section-title">Our Specialist Doctors</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4" *ngFor="let doc of doctors">
+                    <div class="custom-card doctor-card">
+                        <img [src]="doc.img" class="card-img-top" [alt]="doc.name">
+                        <div class="card-body text-center">
+                            <h5 class="doctor-name">{{doc.name}}</h5>
+                            <p class="doctor-specialty">{{doc.speciality}}</p>
+                            <a routerLink="/patient/book-appointment" [queryParams]="{ doctorId: doc.id, doctorName: doc.name, speciality: doc.speciality }" class="btn btn-outline-primary">Book Appointment</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHY CHOOSE US SECTION -->
+    <div class="section">
+        <div class="container">
+            <h2 class="section-title">Why Choose CarePlus?</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4" *ngFor="let w of whyUs">
+                    <div class="custom-card feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h5 class="feature-title">{{w.title}}</h5>
+                        <p class="feature-desc">{{w.desc}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple scroll animation
+        window.addEventListener('scroll', () => {
+            const elements = document.querySelectorAll('.custom-card');
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // Initialize cards with initial state
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.custom-card');
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s ease';
+            });
+            
+            // Trigger scroll event to show visible cards
+            window.dispatchEvent(new Event('scroll'));
+        });
+    </script>
+</body>
+</html>

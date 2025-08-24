@@ -1,0 +1,78 @@
+<div class="container py-5">
+  <h2 class="text-center mb-4">Manage Appointments</h2>
+
+  <table class="table table-bordered table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>Patient</th>
+        <th>Doctor</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Disease Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let appt of appointments">
+        <!-- Patient -->
+        <td *ngIf="editingId !== appt.id">{{ appt.patientName }}</td>
+        <td *ngIf="editingId === appt.id">
+          <input class="form-control" [(ngModel)]="editedAppointment.patientName" />
+        </td>
+
+        <!-- Doctor -->
+        <td *ngIf="editingId !== appt.id">{{ appt.doctorName }}</td>
+        <td *ngIf="editingId === appt.id">
+          <input class="form-control" [(ngModel)]="editedAppointment.doctorName" />
+        </td>
+
+        <!-- Date -->
+        <td *ngIf="editingId !== appt.id">{{ appt.date }}</td>
+        <td *ngIf="editingId === appt.id">
+          <input type="date" class="form-control" [(ngModel)]="editedAppointment.date" />
+        </td>
+
+        <!-- Time -->
+        <td *ngIf="editingId !== appt.id">{{ appt.time }}</td>
+        <td *ngIf="editingId === appt.id">
+          <input type="time" class="form-control" [(ngModel)]="editedAppointment.time" />
+        </td>
+
+        <!-- Disease Description -->
+        <td *ngIf="editingId !== appt.id">{{ appt.diseaseDescription }}</td>
+        <td *ngIf="editingId === appt.id">
+          <textarea class="form-control" [(ngModel)]="editedAppointment.diseaseDescription"></textarea>
+        </td>
+
+        <!-- Actions -->
+        <td>
+          <!-- Not editing -->
+          <button *ngIf="editingId !== appt.id"
+                  class="btn btn-sm btn-primary me-2"
+                  (click)="startEdit(appt)">
+            Edit
+          </button>
+
+          <!-- While editing -->
+          <button *ngIf="editingId === appt.id"
+                  class="btn btn-sm btn-success me-2"
+                  (click)="saveEdit(appt.id)">
+            Save
+          </button>
+
+          <button *ngIf="editingId === appt.id"
+                  class="btn btn-sm btn-secondary me-2"
+                  (click)="cancelEdit()">
+            Cancel
+          </button>
+
+          <!-- Delete -->
+          <button class="btn btn-sm btn-danger"
+                  (click)="deleteAppointment(appt.id)">
+            Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

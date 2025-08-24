@@ -1,0 +1,37 @@
+@import '~bootstrap/dist/css/bootstrap.min.css';
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  flex: 1;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+/* Target the footer component specifically */
+app-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* Alternative: if you want to target by class */
+.footer-component {
+  flex-shrink: 0;
+  margin-top: auto;
+}

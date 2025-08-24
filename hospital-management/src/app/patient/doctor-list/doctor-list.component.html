@@ -1,0 +1,38 @@
+<div class="container py-4">
+  <h2 class="text-center mb-4">Find a Doctor</h2>
+
+  <!-- Filters -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input type="text" class="form-control" [(ngModel)]="searchText" placeholder="Search by name...">
+    </div>
+    <div class="col-md-6">
+      <select class="form-select" [(ngModel)]="selectedSpeciality">
+        <option value="">All Specialities</option>
+        <option value="Cardiologist">Cardiologist</option>
+        <option value="Neurologist">Neurologist</option>
+        <option value="Orthopedic">Orthopedic</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Doctor Cards -->
+  <div class="row">
+    <div class="col-md-4 mb-4" *ngFor="let d of filteredDoctors">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">{{d.name}}</h5>
+          <p class="card-text">
+            <strong>Speciality:</strong> {{d.speciality}} <br>
+            <strong>Experience:</strong> {{d.experience}} years <br>
+            <strong>Hospital:</strong> {{d.hospital}} <br>
+            <strong>Fees:</strong> ₹{{d.fees}}
+          </p>
+          <button class="btn btn-primary w-100" (click)="bookAppointment(d)">
+            Book Appointment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

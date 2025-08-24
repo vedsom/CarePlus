@@ -1,0 +1,29 @@
+<div class="container py-4">
+  <h2>Manage Lab Bookings</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Test Name</th>
+        <th>Date</th>
+        <th>Time Slot</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let b of bookings">
+        <td>{{ b.testName }}</td>
+        <td>{{ b.date }}</td>
+        <td>{{ b.timeSlot }}</td>
+        <td>{{ b.type }}</td>
+        <td>{{ b.status }}</td>
+        <td>
+          <!-- Updated to use booking_id instead of id -->
+          <button class="btn btn-warning btn-sm me-2" (click)="rescheduleBooking(b.booking_id)">Reschedule</button>
+          <button class="btn btn-danger btn-sm" (click)="cancelBooking(b.booking_id)">Cancel</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

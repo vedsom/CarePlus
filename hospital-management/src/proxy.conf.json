@@ -1,0 +1,7 @@
+{
+  "/api/labs": {
+    "target": "http://127.0.0.1:5003",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

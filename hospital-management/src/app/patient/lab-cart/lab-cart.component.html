@@ -1,0 +1,25 @@
+<div class="container py-4">
+  <h2>Your Cart</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Test</th>
+        <th>Price</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of cart">
+        <td>{{ item.name }}</td>
+        <td>₹ {{ item.price }}</td>
+        <td>
+          <button class="btn btn-danger btn-sm" (click)="removeItem(item.id)">Remove</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Total: ₹ {{ getTotal() }}</h4>
+
+  <a routerLink="/patient/lab-checkout" class="btn btn-success">Proceed to Checkout</a>
+</div>

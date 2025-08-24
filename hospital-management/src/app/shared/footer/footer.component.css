@@ -1,0 +1,5 @@
+/* Add this to your global styles.css or footer.component.css */
+.footer-wrapper {
+  flex-shrink: 0;
+  margin-top: auto;
+}
