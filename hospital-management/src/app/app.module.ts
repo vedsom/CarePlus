@@ -11,6 +11,7 @@ import { AboutComponent } from './public/about/about.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { FormsModule } from '@angular/forms';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -19,7 +20,8 @@ import { FormsModule } from '@angular/forms';
     HomeComponent,
     AboutComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    MainLayoutComponent
   ],
   imports: [
     BrowserModule,

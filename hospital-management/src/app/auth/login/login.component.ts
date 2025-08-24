@@ -9,20 +9,31 @@ import { AuthService } from '../../patient/services/auth.service';
 export class LoginComponent {
   email = '';
   password = '';
+  errorMessage: string | null = null; // For displaying login errors
 
   constructor(private auth: AuthService, private router: Router) {}
 
   login() {
+    this.errorMessage = null; // Reset error on new attempt
     this.auth.login({ email: this.email, password: this.password }).subscribe({
       next: (res: any) => {
         this.auth.saveToken(res.token);
 
         // Redirect based on role
-        if (res.role === 'admin') this.router.navigate(['/admin/dashboard']);
-        else if (res.role === 'doctor') this.router.navigate(['/doctor/dashboard']);
-        else this.router.navigate(['/patient/dashboard']);
+        if (res.role === 'admin') {
+          this.router.navigate(['/admin']); // Or '/admin/dashboard'
+        } else if (res.role === 'doctor') {
+          this.router.navigate(['/doctor']); // Or '/doctor/dashboard'
+        } else {
+          // ** THE FIX: Redirect patients to the main home page **
+          this.router.navigate(['/home']);
+        }
       },
-      error: (err) => alert(err.error.error || 'Login failed')
+      error: (err) => {
+        // Better error handling than alert()
+        this.errorMessage = err.error.error || 'Login failed. Please check your credentials.';
+        console.error(err);
+      }
     });
   }
 }
