@@ -32,8 +32,7 @@ const routes: Routes = [
     ]
   },
 
-  // 3. Wildcard route to redirect unknown URLs to login
-  { path: '**', redirectTo: 'auth/login' }
+
 ];
 
 @NgModule({

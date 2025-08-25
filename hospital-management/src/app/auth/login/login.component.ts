@@ -9,28 +9,28 @@ import { AuthService } from '../../patient/services/auth.service';
 export class LoginComponent {
   email = '';
   password = '';
-  errorMessage: string | null = null; // For displaying login errors
+  errorMessage: string | null = null;
 
   constructor(private auth: AuthService, private router: Router) {}
 
   login() {
-    this.errorMessage = null; // Reset error on new attempt
+    this.errorMessage = null;
     this.auth.login({ email: this.email, password: this.password }).subscribe({
       next: (res: any) => {
-        this.auth.saveToken(res.token);
-
-        // Redirect based on role
+        // REMOVE THIS LINE - the service now does this automatically
+        // this.auth.saveToken(res.token); 
+        
+        // The service has already saved the token and user profile by this point.
+        // We just need to navigate.
         if (res.role === 'admin') {
-          this.router.navigate(['/admin']); // Or '/admin/dashboard'
+          this.router.navigate(['/admin']);
         } else if (res.role === 'doctor') {
-          this.router.navigate(['/doctor']); // Or '/doctor/dashboard'
+          this.router.navigate(['/doctor']);
         } else {
-          // ** THE FIX: Redirect patients to the main home page **
           this.router.navigate(['/home']);
         }
       },
       error: (err) => {
-        // Better error handling than alert()
         this.errorMessage = err.error.error || 'Login failed. Please check your credentials.';
         console.error(err);
       }

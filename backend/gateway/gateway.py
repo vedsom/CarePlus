@@ -3,59 +3,66 @@ from flask_cors import CORS
 import requests
 
 app = Flask(__name__)
-CORS(app)  # ✅ allow Angular frontend
+# Use a more specific CORS configuration
+CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})
 
-# Microservice URLs
-APPOINTMENT_SERVICE_URL = "http://localhost:5001"
+# --- THE FIX: Correct port numbers and add the auth service ---
+AUTH_SERVICE_URL = "http://localhost:5001"
+APPOINTMENT_SERVICE_URL = "http://localhost:5002" # <-- Port changed to 5002
 LAB_SERVICE_URL = "http://localhost:5003"
+# --- END OF FIX ---
 
+# This helper function forwards requests while keeping the auth header
+def forward_request(service_url, path):
+    headers = {key: value for (key, value) in request.headers if key != 'Host'}
+    
+    try:
+        response = requests.request(
+            method=request.method,
+            url=f"{service_url}{path}",
+            headers=headers,
+            json=request.get_json() if request.data else None,
+            params=request.args
+        )
+        # Check if the response from the microservice is JSON
+        try:
+            json_response = response.json()
+        except ValueError:
+            # If not JSON, return the raw content
+            return response.content, response.status_code
+            
+        return jsonify(json_response), response.status_code
+    except requests.exceptions.ConnectionError:
+        return jsonify({"error": f"Could not connect to service at {service_url}"}), 503
+
+# -------------------------------
+# Auth Service Proxy
+# -------------------------------
+@app.route("/auth/<path:path>", methods=["POST"])
+def auth_proxy(path):
+    return forward_request(AUTH_SERVICE_URL, f"/auth/{path}")
 
 # -------------------------------
 # Appointment Service Proxy
 # -------------------------------
-
 @app.route("/api/appointments", methods=["GET", "POST"])
-def appointments():
-    if request.method == "GET":
-        resp = requests.get(f"{APPOINTMENT_SERVICE_URL}/appointments")
-    else:  # POST
-        resp = requests.post(f"{APPOINTMENT_SERVICE_URL}/appointments", json=request.json)
-
-    return jsonify(resp.json()), resp.status_code
-
+def appointments_proxy():
+    return forward_request(APPOINTMENT_SERVICE_URL, "/api/appointments")
 
 @app.route("/api/appointments/<int:appointment_id>", methods=["PUT", "DELETE"])
-def appointment_detail(appointment_id):
-    if request.method == "PUT":
-        resp = requests.put(f"{APPOINTMENT_SERVICE_URL}/appointments/{appointment_id}", json=request.json)
-    else:  # DELETE
-        resp = requests.delete(f"{APPOINTMENT_SERVICE_URL}/appointments/{appointment_id}")
-
-    return jsonify(resp.json()), resp.status_code
-
+def appointment_detail_proxy(appointment_id):
+    return forward_request(APPOINTMENT_SERVICE_URL, f"/api/appointments/{appointment_id}")
 
 # -------------------------------
 # Lab Service Proxy
 # -------------------------------
-
 @app.route("/api/labs", methods=["GET", "POST"])
-def labs():
-    if request.method == "GET":
-        resp = requests.get(f"{LAB_SERVICE_URL}/labs")
-    else:  # POST
-        resp = requests.post(f"{LAB_SERVICE_URL}/labs", json=request.json)
-
-    return jsonify(resp.json()), resp.status_code
-
+def labs_proxy():
+    return forward_request(LAB_SERVICE_URL, "/api/labs")
 
 @app.route("/api/labs/<int:booking_id>", methods=["PUT", "DELETE"])
-def lab_detail(booking_id):
-    if request.method == "PUT":
-        resp = requests.put(f"{LAB_SERVICE_URL}/labs/{booking_id}", json=request.json)
-    else:  # DELETE
-        resp = requests.delete(f"{LAB_SERVICE_URL}/labs/{booking_id}")
-
-    return jsonify(resp.json()), resp.status_code
+def lab_detail_proxy(booking_id):
+    return forward_request(LAB_SERVICE_URL, f"/api/labs/{booking_id}")
 
 
 if __name__ == "__main__":

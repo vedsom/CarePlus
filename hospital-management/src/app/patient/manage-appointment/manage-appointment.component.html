@@ -1,78 +1,109 @@
-<div class="container py-5">
-  <h2 class="text-center mb-4">Manage Appointments</h2>
+<div class="appointments-container">
+  <!-- Header -->
+  <div class="header-section">
+    <div class="header-decoration"></div>
+    <h1 class="appointments-title">
+      <svg class="title-icon" viewBox="0 0 24 24">
+        <path d="M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H19M19,19V5H5V19H19M17,17H7V15H17V17M17,13H7V11H17V13M17,9H7V7H17V9Z"/>
+      </svg>
+      My Appointments
+    </h1>
+    <p class="appointments-subtitle">View and manage your upcoming medical appointments</p>
 
-  <table class="table table-bordered table-hover">
-    <thead class="table-light">
-      <tr>
-        <th>Patient</th>
-        <th>Doctor</th>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Disease Description</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let appt of appointments">
-        <!-- Patient -->
-        <td *ngIf="editingId !== appt.id">{{ appt.patientName }}</td>
-        <td *ngIf="editingId === appt.id">
-          <input class="form-control" [(ngModel)]="editedAppointment.patientName" />
-        </td>
+    <div *ngIf="patient" class="patient-info-card">
+    <div class="patient-name">{{ patient.name }}</div>
+    <div class="patient-id">Patient ID: #{{ patient.id }}</div>
+</div>
+  </div>
 
-        <!-- Doctor -->
-        <td *ngIf="editingId !== appt.id">{{ appt.doctorName }}</td>
-        <td *ngIf="editingId === appt.id">
-          <input class="form-control" [(ngModel)]="editedAppointment.doctorName" />
-        </td>
+  <!-- Content -->
+  <div class="content-section">
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="filter-tabs">
+        <button class="filter-tab" [class.active]="filter==='all'" (click)="setFilter('all')">All Appointments</button>
+        <button class="filter-tab" [class.active]="filter==='upcoming'" (click)="setFilter('upcoming')">Upcoming</button>
+        <button class="filter-tab" [class.active]="filter==='past'" (click)="setFilter('past')">Past</button>
+        <button class="filter-tab" [class.active]="filter==='cancelled'" (click)="setFilter('cancelled')">Cancelled</button>
+      </div>
+    </div>
 
-        <!-- Date -->
-        <td *ngIf="editingId !== appt.id">{{ appt.date }}</td>
-        <td *ngIf="editingId === appt.id">
-          <input type="date" class="form-control" [(ngModel)]="editedAppointment.date" />
-        </td>
+    <!-- Grid -->
+    <div class="appointments-grid">
+      <div *ngFor="let appt of filteredAppointments" class="appointment-card">
+        <!-- Status -->
+        <div class="appointment-status" 
+             [ngClass]="{
+               'status-confirmed': !appt.cancelled,
+               'status-cancelled': appt.cancelled
+             }">
+          {{ appt.cancelled ? 'Cancelled' : 'Confirmed' }}
+        </div>
 
-        <!-- Time -->
-        <td *ngIf="editingId !== appt.id">{{ appt.time }}</td>
-        <td *ngIf="editingId === appt.id">
-          <input type="time" class="form-control" [(ngModel)]="editedAppointment.time" />
-        </td>
+        <!-- Header -->
+        <div class="appointment-header">
+          <div class="doctor-avatar">{{ getDoctorInitials(appt.doctorName) }}</div>
+          <div class="doctor-info">
+            <h3>{{ appt.doctorName }}</h3>
+            <div class="doctor-specialty">{{ appt.speciality || 'General' }}</div>
+          </div>
+        </div>
 
-        <!-- Disease Description -->
-        <td *ngIf="editingId !== appt.id">{{ appt.diseaseDescription }}</td>
-        <td *ngIf="editingId === appt.id">
-          <textarea class="form-control" [(ngModel)]="editedAppointment.diseaseDescription"></textarea>
-        </td>
+        <!-- Details -->
+        <div class="appointment-details">
+          <div class="detail-item">
+            <svg class="detail-icon" viewBox="0 0 24 24"><path d="M19,3A2,2 ..."/></svg>
+            <div class="detail-content">
+              <div class="detail-label">Date</div>
+              <div class="detail-value">{{ appt.date | date }}</div>
+            </div>
+          </div>
+          <div class="detail-item">
+            <svg class="detail-icon" viewBox="0 0 24 24"><path d="M12,20A8,8 ..."/></svg>
+            <div class="detail-content">
+              <div class="detail-label">Time</div>
+              <div class="detail-value">{{ appt.time }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Symptoms -->
+        <div class="symptoms-section" *ngIf="appt.diseaseDescription">
+          <div class="symptoms-label">Symptoms / Concerns</div>
+          <div class="symptoms-text">{{ appt.diseaseDescription }}</div>
+        </div>
 
         <!-- Actions -->
-        <td>
-          <!-- Not editing -->
-          <button *ngIf="editingId !== appt.id"
-                  class="btn btn-sm btn-primary me-2"
-                  (click)="startEdit(appt)">
-            Edit
-          </button>
+        <div class="appointment-actions" *ngIf="!appt.cancelled">
+          <button class="action-btn btn-primary" (click)="startEdit(appt)">Reschedule</button>
+          <button class="action-btn btn-danger" (click)="deleteAppointment(appt.id)">Cancel</button>
+        </div>
 
-          <!-- While editing -->
-          <button *ngIf="editingId === appt.id"
-                  class="btn btn-sm btn-success me-2"
-                  (click)="saveEdit(appt.id)">
-            Save
-          </button>
+        <!-- Edit Form -->
+        <div class="edit-form active" *ngIf="editingId === appt.id">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">New Date</label>
+              <input type="date" class="form-input" [(ngModel)]="editedAppointment.date">
+            </div>
+            <div class="form-group">
+              <label class="form-label">New Time</label>
+              <input type="time" class="form-input" [(ngModel)]="editedAppointment.time">
+            </div>
+          </div>
+          <div class="edit-actions">
+            <button class="action-btn btn-success" (click)="saveEdit(appt.id)">Save</button>
+            <button class="action-btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-          <button *ngIf="editingId === appt.id"
-                  class="btn btn-sm btn-secondary me-2"
-                  (click)="cancelEdit()">
-            Cancel
-          </button>
-
-          <!-- Delete -->
-          <button class="btn btn-sm btn-danger"
-                  (click)="deleteAppointment(appt.id)">
-            Delete
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredAppointments.length === 0">
+      <svg class="empty-icon" viewBox="0 0 24 24"><path d="M19,3H5C3.89,3..." /></svg>
+      <h3 class="empty-title">No Appointments Found</h3>
+      <p class="empty-message">There are no appointments matching your filter.</p>
+    </div>
+  </div>
 </div>

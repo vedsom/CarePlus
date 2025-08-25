@@ -1,18 +1,26 @@
 from flask import Blueprint, request, jsonify
 from models import db, User
-import jwt, datetime
-from flask_cors import cross_origin
+from werkzeug.security import generate_password_hash # Import this specifically
+import jwt
+import datetime
+import os # Import the os library
 
 auth_routes = Blueprint("auth_routes", __name__)
-SECRET_KEY = "your_secret_key_here"
+
+# --- THE FIX ---
+# Load the REAL secret key from the environment variables
+# This is the same key that your other services are loading.
+SECRET_KEY = os.environ.get('SECRET_KEY')
+# --- END OF FIX ---
+
 
 # Register
 @auth_routes.route("/register", methods=["POST"])
-@cross_origin()
 def register():
     data = request.json
     if User.query.filter_by(email=data['email']).first():
         return jsonify({"error": "Email already exists"}), 400
+    
     user = User(
         username=data['username'],
         email=data['email'],
@@ -25,19 +33,24 @@ def register():
 
 # Login
 @auth_routes.route("/login", methods=["POST"])
-@cross_origin()
 def login():
     data = request.json
     user = User.query.filter_by(email=data['email']).first()
+    
+    if not SECRET_KEY:
+        # This is a check to make sure your .env file was loaded correctly
+        return jsonify({"error": "Server configuration error: Secret key not found."}), 500
+
     if user and user.check_password(data['password']):
         token = jwt.encode(
             {
                 "user_id": user.id,
                 "role": user.role,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=5)
+                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)
             },
-            SECRET_KEY,
+            SECRET_KEY, # This now uses the correct, shared key
             algorithm="HS256"
         )
         return jsonify({"token": token, "role": user.role}), 200
+        
     return jsonify({"error": "Invalid email or password"}), 401

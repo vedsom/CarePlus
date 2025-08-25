@@ -1,33 +1,129 @@
-<div class="container py-5">
-  <h2 class="text-center mb-4">Book Appointment</h2>
-  <form class="card p-4 shadow-sm w-50 mx-auto">
-    <div class="mb-3">
-      <label class="form-label">Patient Name</label>
-      <input type="text" class="form-control" [(ngModel)]="appointment.patientName" name="patientName" required>
-    </div>
+<div class="appointment-container">
+  <div class="header-section">
+    <div class="header-decoration"></div>
+    <h1 class="appointment-title">Book Appointment</h1>
+    <p class="appointment-subtitle">Schedule your consultation with our expert medical professionals</p>
+  </div>
 
-    <div class="mb-3">
-      <label class="form-label">Date</label>
-      <input type="date" class="form-control" [(ngModel)]="appointment.date" name="date" required>
-    </div>
+  <div class="form-section">
+    <form (ngSubmit)="bookAppointment()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">
+            <svg class="label-icon" viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>
+            Patient Name
+          </label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="appointment.patientName" 
+            name="patientName" 
+            placeholder="Enter full name"
+            required
+          >
+        </div>
 
-    <div class="mb-3">
-      <label class="form-label">Time</label>
-      <input type="time" class="form-control" [(ngModel)]="appointment.time" name="time" required>
-    </div>
+        <div class="form-group">
+          <label class="form-label">
+            <svg class="label-icon" viewBox="0 0 24 24"><path d="M9,10V12H7V10H9M13,10V12H11V10H13M17,10V12H15V10H17M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5A2,2 0 0,1 5,3H6V1H8V3H16V1H18V3H19M19,19V8H5V19H19M9,14V16H7V14H9M13,14V16H11V14H13M17,14V16H15V14H17Z"/></svg>
+            Preferred Date
+          </label>
+          <input 
+            type="date" 
+            class="form-input" 
+            [(ngModel)]="appointment.date" 
+            name="date"
+            [min]="minDate"
+            required
+          >
+        </div>
+      </div>
 
-    <div class="mb-3">
-      <label class="form-label">Doctor</label>
-      <select class="form-select" [(ngModel)]="appointment.doctorId" name="doctorId" required>
-        <option *ngFor="let d of doctors" [value]="d.id">{{d.name}} - {{d.speciality}}</option>
-      </select>
-    </div>
+      <div class="form-group">
+        <label class="form-label">
+          <svg class="label-icon" viewBox="0 0 24 24"><path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/></svg>
+          Select Doctor
+        </label>
+        <div class="doctor-select-wrapper">
+          <select 
+            class="form-select" 
+            [(ngModel)]="appointment.doctorId" 
+            (change)="onDoctorChange()"
+            name="doctorId" 
+            required
+          >
+            <option value="" disabled>Choose your doctor</option>
+            <option *ngFor="let doc of doctors" [value]="doc.id">
+              {{ doc.name }} - {{ doc.speciality }}
+            </option>
+          </select>
 
-    <div class="mb-3">
-      <label class="form-label">Disease / Concern</label>
-      <textarea class="form-control" [(ngModel)]="appointment.diseaseDescription" name="diseaseDescription"></textarea>
-    </div>
+          <div *ngFor="let doc of doctors">
+            <div class="doctor-card active" *ngIf="appointment.doctorId == doc.id">
+              <div class="doctor-info">
+                <div class="doctor-avatar">{{ doc.name.charAt(0) }}{{ doc.name.split(' ')[1].charAt(0) }}</div>
+                <div class="doctor-details">
+                  <h4>{{ doc.name }}</h4>
+                  <p>{{ doc.speciality }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <button type="button" class="btn btn-primary w-100" (click)="bookAppointment()">Book Consultation</button>
-  </form>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">
+            <svg class="label-icon" viewBox="0 0 24 24"><path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"/></svg>
+            Preferred Time
+          </label>
+          <input 
+            type="time" 
+            class="form-input" 
+            [(ngModel)]="appointment.time" 
+            name="time" 
+            required
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">
+          <svg class="label-icon" viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>
+          Symptoms / Concerns
+        </label>
+        <textarea 
+          class="form-textarea" 
+          [(ngModel)]="appointment.diseaseDescription" 
+          name="diseaseDescription"
+          placeholder="Please describe your symptoms or health concerns in detail..."
+        ></textarea>
+      </div>
+
+      <button 
+        type="submit" 
+        class="book-button"
+        [disabled]="isBooking || isSuccess"
+      >
+        <div class="loading-spinner" *ngIf="isBooking" style="display: inline-block;"></div>
+        <svg class="button-icon" *ngIf="!isBooking" viewBox="0 0 24 24">
+          <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+        </svg>
+        <span *ngIf="!isBooking">Book Consultation</span>
+        <span *ngIf="isBooking">Processing...</span>
+      </button>
+
+      <div class="success-message" *ngIf="isSuccess" style="display: block;">
+        ✅ Appointment booked successfully! Redirecting...
+      </div>
+
+      <div class="emergency-note">
+        <svg class="emergency-icon" viewBox="0 0 24 24"><path d="M12,2L13.09,8.26L20,9L14,14L15.18,21L12,18.5L8.82,21L10,14L4,9L10.91,8.26L12,2Z"/></svg>
+        <div class="emergency-text">
+          <strong>Emergency?</strong> For urgent medical assistance, please call our 24/7 helpline: <strong>+1-800-MEDICAL</strong>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>

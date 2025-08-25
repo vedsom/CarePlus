@@ -4,12 +4,14 @@ import { BookAppointmentComponent } from './book-appointment/book-appointment.co
 import { ManageAppointmentComponent } from './manage-appointment/manage-appointment.component';
 import { ManageLabBookingsComponent } from './manage-lab-bookings/manage-lab-bookings.component';
 import { LabBookSlotComponent } from './lab-book-slot/lab-book-slot.component';
+import { LabListComponent } from './lab-list/lab-list.component';
 
 const routes: Routes = [
   { path: 'book-appointment', component: BookAppointmentComponent },
   { path: 'manage-appointment', component: ManageAppointmentComponent },
   { path: 'labs/book/:id', component: LabBookSlotComponent },
   { path: 'labs/manage', component: ManageLabBookingsComponent },
+  { path: 'labs/tests', component: LabListComponent },
 
 ];
 
