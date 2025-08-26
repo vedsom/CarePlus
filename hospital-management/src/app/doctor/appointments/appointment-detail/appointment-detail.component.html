@@ -1,0 +1,15 @@
+<div class="card shadow-sm" *ngIf="appointment">
+  <div class="card-header bg-info text-white">
+    <h5>Appointment Detail</h5>
+  </div>
+  <div class="card-body">
+    <p><strong>Patient:</strong> {{ appointment.patientName }}</p>
+    <p><strong>Date:</strong> {{ appointment.date | date:'short' }}</p>
+    <p><strong>Status:</strong> {{ appointment.status }}</p>
+    <p><strong>Notes:</strong> {{ appointment.notes }}</p>
+
+    <button class="btn btn-secondary" routerLink="/doctor/appointments">
+      Back to List
+    </button>
+  </div>
+</div>

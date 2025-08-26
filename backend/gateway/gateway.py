@@ -10,6 +10,7 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})
 AUTH_SERVICE_URL = "http://localhost:5001"
 APPOINTMENT_SERVICE_URL = "http://localhost:5002" # <-- Port changed to 5002
 LAB_SERVICE_URL = "http://localhost:5003"
+DOCTOR_SERVICE_URL = "http://localhost:5004"
 # --- END OF FIX ---
 
 # This helper function forwards requests while keeping the auth header
@@ -63,6 +64,31 @@ def labs_proxy():
 @app.route("/api/labs/<int:booking_id>", methods=["PUT", "DELETE"])
 def lab_detail_proxy(booking_id):
     return forward_request(LAB_SERVICE_URL, f"/api/labs/{booking_id}")
+
+# -------------------------------
+# Doctor Service Proxy
+# -------------------------------
+@app.route("/api/doctor/<path:path>", methods=["GET", "POST", "PUT", "DELETE"])
+def doctor_proxy(path):
+    return forward_request(DOCTOR_SERVICE_URL, f"/api/doctor/{path}")
+
+# -------------------------------
+# Prescription Service Proxy
+# -------------------------------
+@app.route("/api/prescriptions", methods=["POST", "GET"])
+def prescriptions_proxy():
+    return forward_request(DOCTOR_SERVICE_URL, "/api/prescriptions")
+
+@app.route("/api/prescriptions/<int:patient_id>", methods=["GET"])
+def prescriptions_for_patient(patient_id):
+    return forward_request(DOCTOR_SERVICE_URL, f"/api/prescriptions/{patient_id}")
+
+# -------------------------------
+# Referral Service Proxy
+# -------------------------------
+@app.route("/api/referral", methods=["POST"])
+def referral_proxy():
+    return forward_request(DOCTOR_SERVICE_URL, "/api/referral")
 
 
 if __name__ == "__main__":

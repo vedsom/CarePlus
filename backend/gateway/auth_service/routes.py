@@ -1,22 +1,19 @@
 from flask import Blueprint, request, jsonify
 from models import db, User
-from werkzeug.security import generate_password_hash # Import this specifically
+from werkzeug.security import check_password_hash
 import jwt
-import datetime
-import os # Import the os library
+# --- THE FIX IS HERE ---
+from datetime import datetime, timedelta, timezone 
+import os
 
 auth_routes = Blueprint("auth_routes", __name__)
-
-# --- THE FIX ---
-# Load the REAL secret key from the environment variables
-# This is the same key that your other services are loading.
 SECRET_KEY = os.environ.get('SECRET_KEY')
-# --- END OF FIX ---
 
 
-# Register
+# Register Route...
 @auth_routes.route("/register", methods=["POST"])
 def register():
+    # ... your existing register code ...
     data = request.json
     if User.query.filter_by(email=data['email']).first():
         return jsonify({"error": "Email already exists"}), 400
@@ -31,24 +28,26 @@ def register():
     db.session.commit()
     return jsonify({"message": "User registered successfully"}), 201
 
-# Login
+
+# Login Route
 @auth_routes.route("/login", methods=["POST"])
 def login():
     data = request.json
     user = User.query.filter_by(email=data['email']).first()
-    
+
     if not SECRET_KEY:
-        # This is a check to make sure your .env file was loaded correctly
         return jsonify({"error": "Server configuration error: Secret key not found."}), 500
 
     if user and user.check_password(data['password']):
         token = jwt.encode(
             {
+                "sub": str(user.id),
                 "user_id": user.id,
                 "role": user.role,
-                "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+                # This line will now work correctly
+                "exp": datetime.now(timezone.utc) + timedelta(hours=24)
             },
-            SECRET_KEY, # This now uses the correct, shared key
+            SECRET_KEY,
             algorithm="HS256"
         )
         return jsonify({"token": token, "role": user.role}), 200

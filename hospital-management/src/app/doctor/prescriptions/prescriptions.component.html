@@ -1,0 +1,14 @@
+<div class="container mt-3">
+  <h3>Add Prescription</h3>
+  <form (ngSubmit)="addPrescription()">
+    <div class="mb-3">
+      <label>Patient ID</label>
+      <input class="form-control" [(ngModel)]="prescription.patient_id" name="patientId" required>
+    </div>
+    <div class="mb-3">
+      <label>Prescription Content</label>
+      <textarea class="form-control" [(ngModel)]="prescription.content" name="content" required></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">Save</button>
+  </form>
+</div>
