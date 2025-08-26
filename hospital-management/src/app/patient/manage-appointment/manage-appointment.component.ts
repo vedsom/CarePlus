@@ -23,7 +23,7 @@ export class ManageAppointmentComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.patient = this.authService.currentUser;
+    this.patient = this.authService.currentUserValue;
     this.loadAppointments();
   }
 

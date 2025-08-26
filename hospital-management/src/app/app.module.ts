@@ -15,6 +15,7 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout.component
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
     AboutComponent,
     LoginComponent,
     RegisterComponent,
-    MainLayoutComponent
+    MainLayoutComponent,
+    AdminLayoutComponent
   ],
   imports: [
     BrowserModule,

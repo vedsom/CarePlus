@@ -8,16 +8,24 @@ import { PrescriptionsComponent } from './prescriptions/prescriptions.component'
 import { ProfileComponent } from './profile/profile.component';
 import { EarningsComponent } from './earnings/earnings.component';
 
-
 const routes: Routes = [
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'appointments', component: AppointmentsListComponent },
-  { path: 'appointments/:id', component: AppointmentDetailComponent },
-  { path: 'referrals', component: ReferralsComponent },
-  { path: 'prescriptions', component: PrescriptionsComponent },
-  { path: 'profile', component: ProfileComponent },
-  { path: 'earnings', component: EarningsComponent },
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+  {
+    // The base path for the doctor section (e.g., /doctor) loads the DashboardComponent.
+    // The DashboardComponent contains the sidebar and a <router-outlet>.
+    path: '',
+    component: DashboardComponent,
+    // The following components are loaded inside the DashboardComponent's <router-outlet>.
+    children: [
+      { path: 'appointments', component: AppointmentsListComponent },
+      { path: 'appointments/:id', component: AppointmentDetailComponent },
+      { path: 'prescriptions', component: PrescriptionsComponent },
+      { path: 'referrals', component: ReferralsComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: 'earnings', component: EarningsComponent },
+      // If the path is just /doctor, redirect to the appointments list by default.
+      { path: '', redirectTo: 'appointments', pathMatch: 'full' }
+    ]
+  }
 ];
 
 @NgModule({

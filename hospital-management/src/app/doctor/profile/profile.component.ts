@@ -87,6 +87,7 @@ export class ProfileComponent implements OnInit {
     saveObservable.subscribe({
       next: () => {
         alert('Profile details saved successfully!');
+        this.authService.updateUserProfile(this.doctor);
         this.loadProfile();
       },
       error: (err) => {

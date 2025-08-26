@@ -1,58 +1,56 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
-// Import your new layout component
-import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 
-// Import your page and auth components
+// Import all necessary components
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component'; // Import the new layout
 import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './public/about/about.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
-import { DashboardComponent } from './doctor/dashboard/dashboard.component';
-import { PrescriptionsComponent } from './doctor/prescriptions/prescriptions.component';
-import { ReferralsComponent } from './doctor/referrals/referrals.component';
-import { ProfileComponent } from './doctor/profile/profile.component';
-import { Appointment } from './patient/services/appointment.service';
-import { AppointmentsListComponent } from './doctor/appointments/appointments-list/appointments-list.component';
-import { AppointmentDetailComponent } from './doctor/appointments/appointment-detail/appointment-detail.component';
+
 const routes: Routes = [
-  // 1. Routes WITHOUT the main layout (navbar/footer)
+  // 1. Standalone routes (no layout)
   { path: 'auth/login', component: LoginComponent },
   { path: 'auth/register', component: RegisterComponent },
 
-  // 2. Routes WITH the main layout
+  // 2. Patient Portal Layout (Navbar + Footer)
   {
     path: '',
     component: MainLayoutComponent,
     canActivate: [AuthGuard],
     children: [
       { path: 'home', component: HomeComponent },
-      { path: 'patient', loadChildren: () => import('./patient/patient.module').then(m => m.PatientModule) },
-      { path: 'doctor', loadChildren: () => import('./doctor/doctor.module').then(m => m.DoctorModule) },
-      { path: 'admin', loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) },
       { path: 'about', component: AboutComponent },
-
-      // Redirect default path to home
+      { 
+        path: 'patient', 
+        loadChildren: () => import('./patient/patient.module').then(m => m.PatientModule) 
+      },
+      // The default route for this layout
       { path: '', redirectTo: 'home', pathMatch: 'full' }
     ]
   },
+
+  // 3. Doctor & Admin Portal Layout (Footer ONLY)
   {
-    path: 'doctor/dashboard',
-    component: DashboardComponent,
+    path: '',
+    component: AdminLayoutComponent, // Use the new layout component
+    canActivate: [AuthGuard],
     children: [
-      { path: 'appointments', component: AppointmentsListComponent },
-      { path: 'appointments/:id', component: AppointmentDetailComponent },
-      { path: 'prescriptions', component: PrescriptionsComponent },
-      { path: 'referrals', component: ReferralsComponent },
-      { path: 'profile', component: ProfileComponent },
-      { path: '', redirectTo: 'appointments', pathMatch: 'full' }
+      { 
+        path: 'doctor', 
+        loadChildren: () => import('./doctor/doctor.module').then(m => m.DoctorModule) 
+      },
+      { 
+        path: 'admin', 
+        loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule) 
+      }
     ]
   },
-  { path: '', redirectTo: 'doctor/dashboard', pathMatch: 'full' },
-  { path: '**', redirectTo: 'doctor/dashboard' }
 
-
+  // 4. Wildcard route to catch any other URL as a fallback
+  { path: '**', redirectTo: 'home' }
 ];
 
 @NgModule({

@@ -1,0 +1,147 @@
+.doctor-dashboard-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f8f9fa; /* Light background for the content area */
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 260px;
+  background-color: #ffffff; /* White background for the sidebar */
+  color: #333; /* Dark text for readability */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-right: 1px solid #e9ecef;
+  flex-shrink: 0; /* Prevents sidebar from shrinking */
+}
+
+/* Sidebar Header (Logo/Brand) */
+.sidebar-header {
+  padding: 10px 0 30px 10px;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 20px;
+}
+
+.brand-title {
+  color: #1976d2; /* Primary blue color */
+  font-weight: 700;
+  font-size: 24px;
+  margin: 0;
+}
+
+.brand-subtitle {
+  font-size: 14px;
+  color: #6c757d;
+}
+
+/* Navigation Links */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Space between links */
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #495057; /* Slightly darker text for links */
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+  background-color: #e3f2fd; /* Light blue on hover */
+  color: #1976d2;
+}
+
+/* Active link styling */
+.nav-link.active {
+  background-color: #1976d2; /* Primary blue for active state */
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(25, 118, 210, 0.25);
+}
+
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  fill: currentColor; /* Icon color will match the text color */
+}
+
+/* Sidebar Footer (User Profile & Logout) */
+.sidebar-footer {
+  margin-top: auto; /* Pushes the footer to the bottom */
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #1976d2;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  color: #212529;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.user-role {
+  font-size: 13px;
+  color: #6c757d;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.logout-btn:hover {
+  background-color: #e9ecef;
+  color: #d32f2f; /* Red color on hover for logout */
+}
+
+.logout-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* Main Content Area */
+.main-content {
+  flex-grow: 1; /* Takes up the remaining space */
+  padding: 40px;
+  overflow-y: auto; /* Allows content to scroll if it's too long */
+}

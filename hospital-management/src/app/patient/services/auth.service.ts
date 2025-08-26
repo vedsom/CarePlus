@@ -1,39 +1,44 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
-// An interface to define the structure of our user's profile
+// Define the structure for the user's profile
 export interface UserProfile {
   id: number;
   name: string;
   role: string;
+  specialization?: string; // Add optional specialization
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // CORRECT: This URL should point to your API Gateway
-  private apiUrl = 'http://localhost:5000'; 
+  private apiUrl = 'http://localhost:5000';
   
-  // This property will hold the logged-in user's data for any component to access
-  currentUser: UserProfile | null = null;
+  // Use a BehaviorSubject to store and stream the user profile data
+  private currentUserSubject = new BehaviorSubject<UserProfile | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    // When the app first loads, check if a token already exists and load the user from it
     this.loadUserFromToken();
   }
 
+  // Public getter to easily access the current profile value
+  public get currentUserValue(): UserProfile | null {
+    return this.currentUserSubject.value;
+  }
+
+  // --- THIS IS THE MISSING METHOD ---
   register(user: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/register`, user);
   }
+  // --- END OF FIX ---
 
   login(credentials: any): Observable<any> {
-    // The 'tap' operator lets us perform an action when the login is successful
     return this.http.post(`${this.apiUrl}/auth/login`, credentials).pipe(
       tap((res: any) => {
-        // After login, save the token and extract the user's profile
         this.saveTokenAndSetUser(res.token, credentials.email);
       })
     );
@@ -41,30 +46,40 @@ export class AuthService {
 
   saveTokenAndSetUser(token: string, username: string): void {
     localStorage.setItem('token', token);
-    
-    // Decode the token to get user_id and role
     const decodedToken: any = jwtDecode(token);
-    
-    // Store the user's profile in the service
-    this.currentUser = {
+    const userProfile: UserProfile = {
       id: decodedToken.user_id,
-      name: username, // Using the email/username from the login form as the name
+      name: username,
       role: decodedToken.role
     };
+    // Push the new profile data to all listening components
+    this.currentUserSubject.next(userProfile);
   }
 
   loadUserFromToken(): void {
     const token = this.getToken();
     if (token) {
-      // If a token is found in storage, decode it to restore the session
       const decodedToken: any = jwtDecode(token);
-      this.currentUser = {
+      const userProfile: UserProfile = {
         id: decodedToken.user_id,
-        // The name is not stored in the token, so we'd show a placeholder on refresh
-        // A real app would make another API call here to get the full profile
-        name: 'Welcome Back!', 
+        name: 'Dr. User', // Placeholder name on initial load
         role: decodedToken.role
       };
+      this.currentUserSubject.next(userProfile);
+    }
+  }
+
+  // This new method allows the ProfileComponent to update the shared user data
+  updateUserProfile(profileData: any): void {
+    const currentUser = this.currentUserValue;
+    if (currentUser) {
+      const updatedProfile: UserProfile = {
+        ...currentUser, // Keep existing data like ID and role
+        name: profileData.name,
+        specialization: profileData.specialization
+      };
+      // Push the updated profile to all listening components
+      this.currentUserSubject.next(updatedProfile);
     }
   }
 
@@ -74,6 +89,6 @@ export class AuthService {
 
   logout(): void {
     localStorage.removeItem('token');
-    this.currentUser = null; // Clear the user profile on logout
+    this.currentUserSubject.next(null); // Clear the profile on logout
   }
 }
