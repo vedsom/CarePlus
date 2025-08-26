@@ -1,9 +1,123 @@
-<div class="container mt-3">
-  <h3>Doctor Profile</h3>
-  <div *ngIf="doctor">
-    <p><b>Name:</b> {{ doctor.name }}</p>
-    <p><b>Specialization:</b> {{ doctor.specialization }}</p>
-    <p><b>Experience:</b> {{ doctor.experience }} years</p>
-    <p><b>Schedule:</b> {{ doctor.schedule }}</p>
+<div class="profile-container">
+  <div class="profile-header">
+    <h3>Doctor Profile</h3>
+    <p>Manage your professional information and availability.</p>
+  </div>
+
+  <!-- Horizontal Tabs -->
+  <div class="profile-tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'view'" (click)="setTab('view')" [disabled]="!profileExists">
+      View Profile
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'edit'" (click)="setTab('edit')">
+      {{ profileExists ? 'Edit Profile & Schedule' : 'Create Profile & Schedule' }}
+    </button>
+  </div>
+
+  <div class="profile-content">
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div><p>Loading Profile...</p>
+    </div>
+
+    <!-- View Profile Tab -->
+    <div *ngIf="!isLoading && activeTab === 'view' && profileExists">
+      <div class="profile-details">
+        <div class="detail-item"><label>Name:</label> <span>{{ doctor.name }}</span></div>
+        <div class="detail-item"><label>Specialization:</label> <span>{{ doctor.specialization }}</span></div>
+        <div class="detail-item"><label>Experience:</label> <span>{{ doctor.experience }} years</span></div>
+        <div class="detail-item"><label>Qualifications:</label> <span>{{ doctor.qualifications }}</span></div>
+      </div>
+      <!-- You could also display a read-only version of the calendar here if desired -->
+    </div>
+
+    <!-- Edit/Create Profile & Schedule Tab -->
+    <div *ngIf="!isLoading && activeTab === 'edit'">
+      <!-- Form for Personal Details -->
+      <form (ngSubmit)="saveProfile()">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input id="name" type="text" class="form-control" [(ngModel)]="doctor.name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="experience">Experience (Years)</label>
+            <input id="experience" type="number" class="form-control" [(ngModel)]="doctor.experience" name="experience">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="specialization">Specialization</label>
+            <select id="specialization" class="form-control" [(ngModel)]="doctor.specialization" name="specialization">
+              <option *ngFor="let spec of specializations" [value]="spec">{{ spec }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="qualifications">Qualifications</label>
+            <select id="qualifications" class="form-control" [(ngModel)]="doctor.qualifications" name="qualifications">
+              <option *ngFor="let qual of qualifications" [value]="qual">{{ qual }}</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Profile Details</button>
+      </form>
+
+      <!-- Dynamic Calendar for Scheduling -->
+      <h5 class="schedule-title">Manage Availability Calendar</h5>
+      
+      <div class="calendar-controls">
+        <div class="btn-group">
+          <div class="btn btn-primary" mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate">Previous</div>
+          <div class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">{{ viewDate | calendarDate:'monthViewTitle':'en' }}</div>
+          <div class="btn btn-primary" mwlCalendarNextView [view]="view" [(viewDate)]="viewDate">Next</div>
+        </div>
+        <div class="btn-group">
+          <div class="btn btn-primary" (click)="view = CalendarView.Month" [class.active]="view === CalendarView.Month">Month</div>
+          <div class="btn btn-primary" (click)="view = CalendarView.Week" [class.active]="view === CalendarView.Week">Week</div>
+          <div class="btn btn-primary" (click)="view = CalendarView.Day" [class.active]="view === CalendarView.Day">Day</div>
+        </div>
+      </div>
+
+      <div [ngSwitch]="view" class="calendar-container">
+        <mwl-calendar-month-view
+          *ngSwitchCase="CalendarView.Month"
+          [viewDate]="viewDate"
+          [events]="events"
+          (dayClicked)="dayClicked($event.day)">
+        </mwl-calendar-month-view>
+        <mwl-calendar-week-view
+          *ngSwitchCase="CalendarView.Week"
+          [viewDate]="viewDate"
+          [events]="events">
+        </mwl-calendar-week-view>
+        <mwl-calendar-day-view
+          *ngSwitchCase="CalendarView.Day"
+          [viewDate]="viewDate"
+          [events]="events">
+        </mwl-calendar-day-view>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Adding a New Event -->
+<div class="modal-backdrop" *ngIf="showEventModal">
+  <div class="modal-content">
+    <h4>Add New Schedule Event</h4>
+    <div class="form-group">
+      <label>Task / Event Title (e.g., "Morning Consultations")</label>
+      <input type="text" class="form-control" [(ngModel)]="newEvent.title" name="eventTitle">
+    </div>
+    <div class="form-group">
+      <label>Start Time</label>
+      <input type="datetime-local" class="form-control" [ngModel]="newEvent.start | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="newEvent.start = $event">
+    </div>
+    <div class="form-group">
+      <label>End Time</label>
+      <input type="datetime-local" class="form-control" [ngModel]="newEvent.end | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="newEvent.end = $event">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-success" (click)="saveEvent()">Save Event</button>
+      <button class="btn btn-secondary" (click)="showEventModal = false">Cancel</button>
+    </div>
   </div>
 </div>

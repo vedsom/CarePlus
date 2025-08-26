@@ -19,7 +19,7 @@ export class BookAppointmentComponent implements OnInit {
   };
 
   doctors = [
-    { id: 1, name: 'Dr. Arjun Singh', speciality: 'Cardiologist' },
+    { id: 5, name: 'Dr. Arjun Singh', speciality: 'Cardiologist' },
     { id: 2, name: 'Dr. Meera Nair', speciality: 'Neurologist' },
     { id: 3, name: 'Dr. Priya Sharma', speciality: 'Pediatrician' },
     { id: 4, name: 'Dr. Rohan Gupta', speciality: 'Orthopedics' }

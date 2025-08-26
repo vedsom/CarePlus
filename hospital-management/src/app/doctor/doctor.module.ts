@@ -10,6 +10,8 @@ import { EarningsComponent } from './earnings/earnings.component';
 import { DoctorRoutingModule } from './doctor-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { CalendarModule } from 'angular-calendar';
+
 
 @NgModule({
   declarations: [
@@ -26,7 +28,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     DoctorRoutingModule,
     HttpClientModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CalendarModule
   ]
 })
 export class DoctorModule { }

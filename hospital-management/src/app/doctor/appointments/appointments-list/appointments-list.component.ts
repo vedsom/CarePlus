@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { DoctorAppointmentService } from '../../services/doctor-appointment.service';
 
 @Component({
   selector: 'app-appointments-list',
@@ -7,16 +8,26 @@ import { Router } from '@angular/router';
 })
 export class AppointmentsListComponent implements OnInit {
   appointments: any[] = [];
+  isLoading = true; // Add a loading state for better UX
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private appointmentService: DoctorAppointmentService // Inject the real service
+  ) {}
 
   ngOnInit(): void {
-    // Later this should be replaced with a service call (to backend API)
-    this.appointments = [
-      { id: 1, patientName: 'John Doe', date: new Date(), status: 'Confirmed' },
-      { id: 2, patientName: 'Jane Smith', date: new Date(), status: 'Pending' },
-      { id: 3, patientName: 'Robert Brown', date: new Date(), status: 'Completed' }
-    ];
+    this.isLoading = true;
+    // Call the service to get real appointments from the backend
+    this.appointmentService.getAppointments().subscribe({
+      next: (data) => {
+        this.appointments = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error("Failed to fetch appointments", err);
+        this.isLoading = false;
+      }
+    });
   }
 
   viewDetails(id: number): void {

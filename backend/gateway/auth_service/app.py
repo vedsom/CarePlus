@@ -20,7 +20,18 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///authDB.db'
+current_dir = os.path.dirname(os.path.abspath(__file__))  # auth_service directory
+gateway_dir = os.path.dirname(current_dir)  # gateway directory
+backend_dir = os.path.dirname(gateway_dir)  # backend directory
+db_path = os.path.join(backend_dir, 'instance', 'hospital.db').replace('\\', '/')
+
+# Debug prints to verify path
+print(f"Current directory: {current_dir}")
+print(f"Backend directory: {backend_dir}")
+print(f"Database path: {db_path}")
+print(f"Instance directory exists: {os.path.exists(os.path.dirname(db_path))}")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)

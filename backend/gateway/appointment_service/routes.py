@@ -98,5 +98,27 @@ def delete_appointment(current_user, id): # Accept user data
     db.session.commit()
     return jsonify({"message": "Appointment deleted"})
 
+@appointments_bp.route("/doctor/appointments", methods=["GET"])
+@token_required
+def get_doctor_appointments(current_user):
+    doctor_id = current_user['user_id']  # or doctor_id if JWT stores differently
+    appts = Appointment.query.filter_by(doctorId=doctor_id).all()
+    return jsonify([a.to_dict() for a in appts])
+
+# Update appointment status by doctor (confirm/cancel)
+@appointments_bp.route("/doctor/appointments/<int:id>", methods=["PUT"])
+@token_required
+def update_doctor_appointment(current_user, id):
+    doctor_id = current_user['user_id']
+    appt = Appointment.query.get_or_404(id)
+    
+    if appt.doctorId != doctor_id:
+        return jsonify({"error": "Permission denied"}), 403
+    
+    data = request.json
+    appt.cancelled = data.get("cancelled", appt.cancelled)
+    db.session.commit()
+    return jsonify({"message": "Appointment updated by doctor"})
+
 # Note: The PATCH route for cancelling can be combined with the PUT route for updating if desired.
 # It should also be protected with the decorator and the security check.

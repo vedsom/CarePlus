@@ -1,10 +1,91 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from datetime import date
-from models import Referral, db, Doctor, Appointment, Prescription, Patient
+from datetime import date, datetime
+from models import db, Doctor, Appointment, Prescription, Patient, Referral, DoctorScheduleEvent
 
-# AFTER:
-doctor_bp = Blueprint("doctor", __name__, url_prefix="/doctor")
+doctor_bp = Blueprint("doctor", __name__)
+
+# --- PROFILE CRUD OPERATIONS ---
+
+@doctor_bp.route("/profile", methods=["POST"])
+@jwt_required()
+def create_profile():
+    """Creates a new doctor profile for the logged-in user."""
+    doctor_id = get_jwt_identity()
+    if Doctor.query.get(doctor_id):
+        return jsonify({"error": "Profile already exists"}), 409
+
+    data = request.json
+    new_doctor = Doctor(
+        id=doctor_id,
+        name=data.get('name'),
+        specialization=data.get('specialization'),
+        qualifications=data.get('qualifications'),
+        experience=data.get('experience')
+    )
+    db.session.add(new_doctor)
+    db.session.commit()
+    return jsonify({"message": "Profile created successfully"}), 201
+
+
+@doctor_bp.route("/profile", methods=["GET", "PUT"])
+@jwt_required()
+def profile():
+    """Gets or updates an existing doctor profile."""
+    doctor_id = get_jwt_identity()
+    doctor = Doctor.query.get_or_404(doctor_id)
+
+    if request.method == "GET":
+        return jsonify({
+            "id": doctor.id,
+            "name": doctor.name,
+            "specialization": doctor.specialization,
+            "qualifications": doctor.qualifications,
+            "experience": doctor.experience
+        })
+
+    # This is for the PUT request
+    data = request.json
+    doctor.name = data.get("name", doctor.name)
+    doctor.specialization = data.get("specialization", doctor.specialization)
+    doctor.qualifications = data.get("qualifications", doctor.qualifications)
+    doctor.experience = data.get("experience", doctor.experience)
+    db.session.commit()
+    return jsonify({"message": "Profile updated"})
+
+
+# --- DYNAMIC CALENDAR SCHEDULE ROUTES ---
+
+@doctor_bp.route("/schedule/events", methods=["GET"])
+@jwt_required()
+def get_schedule_events():
+    doctor_id = get_jwt_identity()
+    events = DoctorScheduleEvent.query.filter_by(doctor_id=doctor_id).all()
+    result = [{
+        "id": event.id,
+        "title": event.title,
+        "start": event.start_time.isoformat(),
+        "end": event.end_time.isoformat()
+    } for event in events]
+    return jsonify(result)
+
+@doctor_bp.route("/schedule/events", methods=["POST"])
+@jwt_required()
+def add_schedule_event():
+    data = request.json
+    doctor_id = get_jwt_identity()
+    new_event = DoctorScheduleEvent(
+        doctor_id=doctor_id,
+        title=data['title'],
+        start_time=datetime.fromisoformat(data['start']),
+        end_time=datetime.fromisoformat(data['end'])
+    )
+    db.session.add(new_event)
+    db.session.commit()
+    return jsonify({"message": "Event added", "id": new_event.id}), 201
+
+
+# --- OTHER DOCTOR ROUTES ---
 
 # Dashboard
 @doctor_bp.route("/dashboard", methods=["GET"])
@@ -12,16 +93,13 @@ doctor_bp = Blueprint("doctor", __name__, url_prefix="/doctor")
 def dashboard():
     doctor_id = get_jwt_identity()
     today = date.today()
-
     appointments_today = Appointment.query.filter_by(
         doctor_id=doctor_id, date=today
     ).count()
-
     upcoming = Appointment.query.filter(
         Appointment.doctor_id == doctor_id,
         Appointment.date >= today
     ).count()
-
     return jsonify({
         "appointments_today": appointments_today,
         "upcoming": upcoming,
@@ -34,24 +112,22 @@ def dashboard():
 def get_appointments():
     doctor_id = get_jwt_identity()
     appointments = Appointment.query.filter_by(doctor_id=doctor_id).all()
-
-    result = []
-    for a in appointments:
-        result.append({
-            "id": a.id,
-            "date": str(a.date),
-            "time": a.time,
-            "status": a.status,
-            "patient_name": a.patient.name if a.patient else None
-        })
+    result = [{
+        "id": a.id,
+        "date": str(a.date),
+        "time": a.time,
+        "status": a.status,
+        "patient_name": a.patient.name if a.patient else "N/A"
+    } for a in appointments]
     return jsonify(result)
 
-# Update Appointment
+# Update Appointment Status
 @doctor_bp.route("/appointments/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_appointment(id):
     data = request.json
     appointment = Appointment.query.get_or_404(id)
+    # Security check could be added here to ensure the doctor owns the appointment
     appointment.status = data.get("status", appointment.status)
     db.session.commit()
     return jsonify({"msg": "Appointment updated"})
@@ -62,7 +138,6 @@ def update_appointment(id):
 def create_prescription():
     data = request.json
     doctor_id = get_jwt_identity()
-
     prescription = Prescription(
         patient_id=data["patient_id"],
         doctor_id=doctor_id,
@@ -72,72 +147,30 @@ def create_prescription():
     db.session.commit()
     return jsonify({"msg": "Prescription added"})
 
-# Get/Update Profile
-@doctor_bp.route("/profile", methods=["GET", "PUT"])
+# Add Referral
+@doctor_bp.route('/referrals', methods=['POST'])
 @jwt_required()
-def profile():
+def add_referral():
+    data = request.get_json()
     doctor_id = get_jwt_identity()
-    doctor = Doctor.query.get_or_404(doctor_id)
-
-    if request.method == "GET":
-        return jsonify({
-            "id": doctor.id,
-            "name": doctor.name,
-            "specialization": doctor.specialization,
-            "qualifications": doctor.qualifications,
-            "experience": doctor.experience,
-            "schedule": doctor.schedule
-        })
-
-    data = request.json
-    doctor.specialization = data.get("specialization", doctor.specialization)
-    doctor.qualifications = data.get("qualifications", doctor.qualifications)
-    doctor.experience = data.get("experience", doctor.experience)
+    new_referral = Referral(
+        patient_id=data["patient_id"],
+        doctor_id=doctor_id,
+        hospital=data["hospital"]
+    )
+    db.session.add(new_referral)
     db.session.commit()
-    return jsonify({"msg": "Profile updated"})
-
-# Update Schedule
-@doctor_bp.route("/schedule", methods=["PUT"])
-@jwt_required()
-def update_schedule():
-    doctor_id = get_jwt_identity()
-    doctor = Doctor.query.get_or_404(doctor_id)
-
-    data = request.json
-    doctor.schedule = data.get("schedule", doctor.schedule)
-    db.session.commit()
-    return jsonify({"msg": "Schedule updated"})
+    return jsonify({"message": "Referral added successfully"}), 201
 
 # Earnings
 @doctor_bp.route("/earnings", methods=["GET"])
 @jwt_required()
 def earnings():
     doctor_id = get_jwt_identity()
-    earnings = Appointment.query.filter_by(
+    # A simple calculation for earnings based on completed appointments
+    fee_per_consult = 500
+    completed_appointments = Appointment.query.filter_by(
         doctor_id=doctor_id, status="Completed"
-    ).count() * 500  # flat fee per consult
-
-    return jsonify({"earnings": earnings})
-
-@doctor_bp.route('/referrals', methods=['POST'])
-@jwt_required()
-def add_referral():
-    data = request.get_json()
-    doctor_id = get_jwt_identity() # Get the logged-in doctor's ID
-
-    # Basic validation
-    if not data or not data.get('patient_id') or not data.get('hospital'):
-        return jsonify({"error": "Missing patient_id or hospital"}), 422
-    
-    # Create a new Referral object
-    new_referral = Referral(
-        patient_id=data["patient_id"],
-        doctor_id=doctor_id,
-        hospital=data["hospital"]
-    )
-    
-    # Add to the database and save
-    db.session.add(new_referral)
-    db.session.commit()
-    
-    return jsonify({"message": "Referral added successfully"}), 201
+    ).count()
+    total_earnings = completed_appointments * fee_per_consult
+    return jsonify({"earnings": total_earnings})

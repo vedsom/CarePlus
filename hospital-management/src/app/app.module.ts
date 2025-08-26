@@ -13,6 +13,9 @@ import { RegisterComponent } from './auth/register/register.component';
 import { FormsModule } from '@angular/forms';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { CalendarModule, DateAdapter } from 'angular-calendar';
+import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,7 +32,11 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    FormsModule
+    FormsModule,
+    CalendarModule.forRoot({
+      provide: DateAdapter,
+      useFactory: adapterFactory,
+    }),
   ],
   providers: [
     {

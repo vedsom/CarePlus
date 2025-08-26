@@ -10,19 +10,24 @@ export class DoctorProfileService {
 
   constructor(private http: HttpClient) {}
 
-  // --- THIS IS THE FIX ---
-  // The method no longer needs a doctorId parameter
   getProfile(): Observable<any> {
-    // The URL should not include an ID at the end
     return this.http.get(`${this.apiUrl}/profile`);
   }
-  // --- END OF FIX ---
 
   updateProfile(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/profile`, data);
   }
+  
+  // --- ADD THIS NEW METHOD ---
+  createProfile(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/profile`, data);
+  }
 
-  updateSchedule(schedule: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/schedule`, { schedule });
+  getScheduleEvents(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/schedule/events`);
+  }
+
+  createScheduleEvent(event: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/schedule/events`, event);
   }
 }

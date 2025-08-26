@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
   providedIn: 'root'
 })
 export class ReferralService {
-  private apiUrl = 'http://localhost:5004/api/doctor/referrals'; // backend not implemented yet
+  private apiUrl = 'http://localhost:5000/api/doctor/referrals'; // backend not implemented yet
 
   constructor(private http: HttpClient) {}
 

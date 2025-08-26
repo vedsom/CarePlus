@@ -14,6 +14,7 @@ class Doctor(db.Model):
 
     appointments = db.relationship("Appointment", back_populates="doctor")
     prescriptions = db.relationship("Prescription", back_populates="doctor")
+    schedule_events = db.relationship("DoctorScheduleEvent", back_populates="doctor")
 
 
 class Patient(db.Model):
@@ -60,3 +61,13 @@ class Referral(db.Model):
     # Foreign keys to link the referral
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"))
     patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"))
+
+class DoctorScheduleEvent(db.Model):
+    __tablename__ = "doctor_schedule_events"
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+    
+    doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"))
+    doctor = db.relationship("Doctor", back_populates="schedule_events")
