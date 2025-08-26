@@ -1,0 +1,76 @@
+/* dashboard.component.css */
+
+/* Define theme colors as CSS variables for easy reuse */
+:root {
+  --primary-color: #1976d2;
+  --info-color: #5bc0de; /* A complementary light blue */
+  --text-gray-800: #333;
+  --text-gray-300: #ccc;
+}
+
+/* Card Styling */
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.card.shadow {
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1.75rem 0 rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Specific styles for stat cards with colored borders */
+.border-left-primary {
+  border-left: 4px solid var(--primary-color);
+}
+
+.border-left-info {
+  border-left: 4px solid var(--info-color);
+}
+
+/* Typography for cards */
+.text-primary {
+  color: var(--primary-color) !important;
+}
+.text-info {
+  color: var(--info-color) !important;
+}
+
+.font-weight-bold {
+  font-weight: 700 !important;
+}
+
+.text-xs {
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+.text-gray-800 {
+  color: var(--text-gray-800) !important;
+}
+
+.text-gray-300 {
+  color: var(--text-gray-300) !important;
+}
+
+.card-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e3e6f0;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+/* Chart Container */
+.chart-container {
+  position: relative;
+  height: 350px; /* Set a fixed height for better control */
+  width: 100%;
+}

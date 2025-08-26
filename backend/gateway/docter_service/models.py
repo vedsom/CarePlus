@@ -12,6 +12,10 @@ class Doctor(db.Model):
     experience = db.Column(db.Integer)
     schedule = db.Column(db.Text)
 
+    salary = db.Column(db.Float, nullable=True)
+    address = db.Column(db.String(255), nullable=True)
+    image_url = db.Column(db.String(255), nullable=True)
+
     appointments = db.relationship("Appointment", back_populates="doctor")
     prescriptions = db.relationship("Prescription", back_populates="doctor")
     schedule_events = db.relationship("DoctorScheduleEvent", back_populates="doctor")

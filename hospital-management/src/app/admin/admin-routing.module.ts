@@ -1,15 +1,26 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ManageDoctorsComponent } from './manage-doctors/manage-doctors.component';
-import { ManageTestimonialsComponent } from './manage-testimonials/manage-testimonials.component';
+
+import { AdminComponent } from './admin/admin.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { DoctorListComponent } from './doctor-management/doctor-list/doctor-list.component';
+import { DoctorFormComponent } from './doctor-management/doctor-form/doctor-form.component';
 
 const routes: Routes = [
-  { path: 'manage-doctors', component: ManageDoctorsComponent },
-  { path: 'manage-testimonials', component: ManageTestimonialsComponent }
+  {
+    path: '',
+    component: AdminComponent,
+    children: [
+      { path: '', component: DashboardComponent },   // /admin
+      { path: 'doctors', component: DoctorListComponent },
+      { path: 'doctors/new', component: DoctorFormComponent },
+      { path: 'doctors/:id/edit', component: DoctorFormComponent }
+    ]
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class AdminRoutingModule { }
+export class AdminRoutingModule {}

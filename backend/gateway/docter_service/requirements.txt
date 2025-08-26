@@ -3,3 +3,4 @@ Flask-Cors
 Flask-SQLAlchemy
 python-dotenv
 Flask-JWT-Extended
+reportlab

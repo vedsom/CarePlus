@@ -53,3 +53,12 @@ def login():
         return jsonify({"token": token, "role": user.role}), 200
         
     return jsonify({"error": "Invalid email or password"}), 401
+
+@auth_routes.route("/stats", methods=["GET"])
+def get_stats():
+    doctors = User.query.filter_by(role="doctor").count()
+    patients = User.query.filter_by(role="patient").count()
+    return jsonify({
+        "doctors": doctors,
+        "patients": patients
+    }), 200

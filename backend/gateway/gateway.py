@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
-
+from flask import Response
 app = Flask(__name__)
 
 # --- CORS SETUP ---
@@ -46,12 +46,23 @@ def forward_request(service_url, path):
         return jsonify({"error": f"Could not connect to the service at {service_url}"}), 503
 
 # --- PROXY ROUTES ---
-@app.route("/auth/<path:path>", methods=["POST", "OPTIONS"])
+@app.route("/auth/<path:path>", methods=["GET", "POST", "OPTIONS"])
 def auth_proxy(path):
     return forward_request(SERVICE_URLS['auth'], f"/auth/{path}")
 
 @app.route("/api/doctor/<path:path>", methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
 def doctor_proxy(path):
+    # Special handling for PDF export
+    if path == "export/pdf":
+        headers = {key: value for (key, value) in request.headers if key != 'Host'}
+        response = requests.get(f"{SERVICE_URLS['doctor']}/api/{path}", headers=headers, stream=True)
+        return Response(
+            response.iter_content(chunk_size=1024),
+            content_type=response.headers.get("Content-Type", "application/pdf"),
+            status=response.status_code
+        )
+    
+    # Normal flow for other doctor routes
     return forward_request(SERVICE_URLS['doctor'], f"/api/{path}")
 
 @app.route("/api/appointments", defaults={'path': ''}, methods=['GET', 'POST', 'OPTIONS'])

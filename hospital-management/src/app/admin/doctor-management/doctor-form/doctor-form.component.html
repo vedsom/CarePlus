@@ -1,0 +1,27 @@
+<div class="container mt-4">
+  <h2>{{ id ? 'Edit Doctor' : 'Add Doctor' }}</h2>
+
+  <form (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label>Name</label>
+      <input class="form-control" [(ngModel)]="doctor.name" name="name" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Specialization</label>
+      <input class="form-control" [(ngModel)]="doctor.specialization" name="specialization" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Salary</label>
+      <input type="number" class="form-control" [(ngModel)]="doctor.salary" name="salary" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Address</label>
+      <input class="form-control" [(ngModel)]="doctor.address" name="address">
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ id ? 'Update' : 'Add' }}</button>
+  </form>
+</div>
