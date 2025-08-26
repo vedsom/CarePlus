@@ -1,27 +1,82 @@
 <div class="container mt-4">
   <h2>{{ id ? 'Edit Doctor' : 'Add Doctor' }}</h2>
 
-  <form (ngSubmit)="onSubmit()">
+  <form (ngSubmit)="onSubmit()" #doctorForm="ngForm">
     <div class="mb-3">
-      <label>Name</label>
-      <input class="form-control" [(ngModel)]="doctor.name" name="name" required>
+      <label for="name" class="form-label">Name *</label>
+      <input 
+        id="name"
+        class="form-control" 
+        [(ngModel)]="doctor.name" 
+        name="name" 
+        required>
     </div>
 
     <div class="mb-3">
-      <label>Specialization</label>
-      <input class="form-control" [(ngModel)]="doctor.specialization" name="specialization" required>
+      <label for="specialization" class="form-label">Specialization</label>
+      <input 
+        id="specialization"
+        class="form-control" 
+        [(ngModel)]="doctor.specialization" 
+        name="specialization">
     </div>
 
     <div class="mb-3">
-      <label>Salary</label>
-      <input type="number" class="form-control" [(ngModel)]="doctor.salary" name="salary" required>
+      <label for="qualifications" class="form-label">Qualifications</label>
+      <input 
+        id="qualifications"
+        class="form-control" 
+        [(ngModel)]="doctor.qualifications" 
+        name="qualifications">
     </div>
 
     <div class="mb-3">
-      <label>Address</label>
-      <input class="form-control" [(ngModel)]="doctor.address" name="address">
+      <label for="experience" class="form-label">Experience (years)</label>
+      <input 
+        id="experience"
+        type="number" 
+        class="form-control" 
+        [(ngModel)]="doctor.experience" 
+        name="experience">
     </div>
 
-    <button type="submit" class="btn btn-primary">{{ id ? 'Update' : 'Add' }}</button>
+    <div class="mb-3">
+      <label for="salary" class="form-label">Salary</label>
+      <input 
+        id="salary"
+        type="number" 
+        step="0.01"
+        class="form-control" 
+        [(ngModel)]="doctor.salary" 
+        name="salary">
+    </div>
+
+    <div class="mb-3">
+      <label for="address" class="form-label">Address</label>
+      <textarea 
+        id="address"
+        class="form-control" 
+        [(ngModel)]="doctor.address" 
+        name="address"
+        rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label for="image_url" class="form-label">Image URL</label>
+      <input 
+        id="image_url"
+        type="url"
+        class="form-control" 
+        [(ngModel)]="doctor.image_url" 
+        name="image_url">
+    </div>
+
+    <button 
+      type="submit" 
+      class="btn btn-primary"
+      [disabled]="!doctorForm.form.valid">
+      {{ id ? 'Update' : 'Add' }}
+    </button>
+    <a href="/admin/doctors" class="btn btn-secondary ms-2">Cancel</a>
   </form>
 </div>

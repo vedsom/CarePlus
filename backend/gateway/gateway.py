@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 import requests
-from flask import Response
+
 app = Flask(__name__)
 
 # --- CORS SETUP ---
@@ -18,52 +18,60 @@ SERVICE_URLS = {
     'auth': 'http://localhost:5001',
     'appointments': 'http://localhost:5002',
     'labs': 'http://localhost:5003',
-    'doctor': 'http://localhost:5004'
+    'doctor_admin': 'http://localhost:5004' # Renamed for clarity as it serves both
 }
 
 # --- HELPER FUNCTION TO FORWARD REQUESTS ---
-def forward_request(service_url, path):
-    # Copy headers except Host
+def forward_request(service_url, path, is_stream=False):
     headers = {key: value for (key, value) in request.headers if key != 'Host'}
-    
-    # OPTIONS preflight requests: return empty 200
+
     if request.method == "OPTIONS":
         return '', 200
-    
+
     try:
         response = requests.request(
             method=request.method,
             url=f"{service_url}{path}",
             headers=headers,
-            json=request.get_json() if request.data else None,
-            params=request.args
+            json=request.get_json(silent=True), # Use silent=True to avoid errors on GET
+            params=request.args,
+            stream=is_stream
         )
-        try:
+
+        if is_stream:
+            return Response(
+                response.iter_content(chunk_size=1024),
+                content_type=response.headers.get("Content-Type", "application/pdf"),
+                status=response.status_code
+            )
+
+        # For JSON or other non-streaming responses
+        content_type = response.headers.get("Content-Type", "")
+        if "application/json" in content_type:
             return jsonify(response.json()), response.status_code
-        except ValueError:
+        else:
             return response.content, response.status_code
-    except requests.exceptions.ConnectionError:
-        return jsonify({"error": f"Could not connect to the service at {service_url}"}), 503
+
+    except requests.exceptions.RequestException as e:
+        error_message = f"Could not connect to the service at {service_url}. Error: {e}"
+        return jsonify({"error": error_message}), 503
 
 # --- PROXY ROUTES ---
 @app.route("/auth/<path:path>", methods=["GET", "POST", "OPTIONS"])
 def auth_proxy(path):
     return forward_request(SERVICE_URLS['auth'], f"/auth/{path}")
 
-@app.route("/api/doctor/<path:path>", methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
-def doctor_proxy(path):
-    # Special handling for PDF export
-    if path == "export/pdf":
-        headers = {key: value for (key, value) in request.headers if key != 'Host'}
-        response = requests.get(f"{SERVICE_URLS['doctor']}/api/{path}", headers=headers, stream=True)
-        return Response(
-            response.iter_content(chunk_size=1024),
-            content_type=response.headers.get("Content-Type", "application/pdf"),
-            status=response.status_code
-        )
+# NEW: Combined proxy for both /api/admin and /api/doctor
+@app.route("/api/<any(admin, doctor):service>/<path:path>", methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+def doctor_admin_proxy(service, path):
+    full_path = f"/api/{service}/{path}"
     
-    # Normal flow for other doctor routes
-    return forward_request(SERVICE_URLS['doctor'], f"/api/{path}")
+    # Special handling for PDF export from the admin service
+    if service == 'admin' and path == 'doctors/pdf':
+        return forward_request(SERVICE_URLS['doctor_admin'], full_path, is_stream=True)
+    
+    return forward_request(SERVICE_URLS['doctor_admin'], full_path)
+
 
 @app.route("/api/appointments", defaults={'path': ''}, methods=['GET', 'POST', 'OPTIONS'])
 @app.route("/api/appointments/<path:path>", methods=['GET', 'PUT', 'DELETE', 'OPTIONS'])

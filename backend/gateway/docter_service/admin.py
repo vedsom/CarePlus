@@ -96,33 +96,53 @@ def export_doctors_pdf():
     # Create PDF in memory
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter  # Get page dimensions (612, 792)
     pdf.setTitle("Doctor List")
 
-    # Title
+    # --- PDF Header ---
     pdf.setFont("Helvetica-Bold", 16)
-    pdf.drawString(200, 750, "Doctor List")
+    pdf.drawCentredString(width / 2.0, height - 50, "CarePlus Doctors List")
 
-    # Table header
-    pdf.setFont("Helvetica-Bold", 12)
-    y = 710
-    pdf.drawString(50, y, "ID")
-    pdf.drawString(100, y, "Name")
-    pdf.drawString(250, y, "Specialization")
-    pdf.drawString(400, y, "Experience")
-    y -= 20
+    # --- Table Header ---
+    pdf.setFont("Helvetica-Bold", 10)
+    y = height - 80
+    pdf.drawString(40, y, "ID")
+    pdf.drawString(70, y, "Name")
+    pdf.drawString(180, y, "Specialization")
+    pdf.drawString(290, y, "Qualifications")
+    pdf.drawString(390, y, "Salary")
+    pdf.drawString(460, y, "Address")
+    y -= 15
+    pdf.line(40, y, width - 40, y) # Draw a line under the header
+    y -= 15
 
-    # Table rows
-    pdf.setFont("Helvetica", 11)
+    # --- Table Rows ---
+    pdf.setFont("Helvetica", 9)
     for doctor in doctors:
-        pdf.drawString(50, y, str(doctor.id))
-        pdf.drawString(100, y, doctor.name or "")
-        pdf.drawString(250, y, doctor.specialization or "")
-        pdf.drawString(400, y, str(doctor.experience) or "")
-        y -= 20
-
-        if y < 50:  # new page
+        # Check if we need a new page
+        if y < 40:
             pdf.showPage()
-            y = 750
+            y = height - 80 # Reset y for new page
+            # Re-draw header on new page if you want
+            pdf.setFont("Helvetica-Bold", 10)
+            pdf.drawString(40, y, "ID")
+            pdf.drawString(70, y, "Name")
+            pdf.drawString(180, y, "Specialization")
+            pdf.drawString(290, y, "Qualifications")
+            pdf.drawString(390, y, "Salary")
+            pdf.drawString(460, y, "Address")
+            y -= 15
+            pdf.line(40, y, width - 40, y)
+            y -= 15
+            pdf.setFont("Helvetica", 9)
+
+        pdf.drawString(40, y, str(doctor.id))
+        pdf.drawString(70, y, doctor.name or "")
+        pdf.drawString(180, y, doctor.specialization or "")
+        pdf.drawString(290, y, doctor.qualifications or "")
+        pdf.drawString(390, y, f"${doctor.salary:,.2f}" if doctor.salary is not None else "N/A")
+        pdf.drawString(460, y, doctor.address or "")
+        y -= 20
 
     pdf.save()
     buffer.seek(0)

@@ -14,7 +14,7 @@ const routes: Routes = [
       { path: '', component: DashboardComponent },   // /admin
       { path: 'doctors', component: DoctorListComponent },
       { path: 'doctors/new', component: DoctorFormComponent },
-      { path: 'doctors/:id/edit', component: DoctorFormComponent }
+      { path: 'doctors/edit/:id', component: DoctorFormComponent }
     ]
   }
 ];

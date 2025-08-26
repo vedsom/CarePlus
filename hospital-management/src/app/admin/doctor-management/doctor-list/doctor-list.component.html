@@ -1,28 +1,52 @@
 <div class="container mt-4">
-  <h2>Doctor Management</h2>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Doctor Management</h2>
+    <div>
+      <button class="btn btn-primary me-2" routerLink="/admin/doctors/new">
+        <i class="fas fa-plus me-2"></i>Add Doctor
+      </button>
+      <button class="btn btn-outline-secondary" (click)="downloadPDF()">
+        <i class="fas fa-file-pdf me-2"></i>Download PDF
+      </button>
+    </div>
+  </div>
 
-  <button class="btn btn-primary mb-3" routerLink="/admin/doctors/add">Add Doctor</button>
-  <button class="btn btn-success mb-3 ms-2" (click)="downloadPDF()">Download PDF</button>
+  <!-- Doctor Cards Grid -->
+  <div class="row g-4">
+    <!-- Use *ngFor to loop over the doctors and create a card for each -->
+    <div class="col-lg-4 col-md-6" *ngFor="let doc of doctors">
+      <div class="doctor-card h-100">
+        <!-- Doctor Image -->
+        <img [src]="doc.image_url" 
+             class="card-img-top" 
+             alt="Photo of {{ doc.name }}"
+             onerror="this.onerror=null;this.src='https://placehold.co/600x400/1976d2/FFFFFF?text=' + (this.alt.split(' ').pop() || '').charAt(0);">
 
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Specialization</th>
-        <th>Salary</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let doc of doctors">
-        <td>{{ doc.name }}</td>
-        <td>{{ doc.specialization }}</td>
-        <td>{{ doc.salary }}</td>
-        <td>
-          <button class="btn btn-warning btn-sm" [routerLink]="['/admin/doctors/edit', doc.id]">Edit</button>
-          <button class="btn btn-danger btn-sm ms-2" (click)="deleteDoctor(doc.id)">Delete</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-3">
+            <div class="avatar me-3">{{ doc.name.charAt(0) }}</div>
+            <div>
+              <h5 class="card-title mb-0">{{ doc.name }}</h5>
+              <p class="card-subtitle text-muted">{{ doc.specialization }}</p>
+            </div>
+          </div>
+
+          <div class="doctor-details">
+            <p><strong>Qualifications:</strong> {{ doc.qualifications }}</p>
+            <p><strong>Salary:</strong> {{ doc.salary | currency:'USD':'symbol' }}</p>
+            <p><strong>Address:</strong> {{ doc.address }}</p>
+          </div>
+        </div>
+        <div class="card-footer bg-transparent border-0 text-end">
+          <button class="btn btn-outline-primary btn-sm" [routerLink]="['/admin/doctors/edit', doc.id]">Edit</button>
+          <button class="btn btn-outline-danger btn-sm ms-2" (click)="deleteDoctor(doc.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message for when there are no doctors -->
+  <div *ngIf="!doctors || doctors.length === 0" class="text-center mt-5">
+    <p class="text-muted">No doctors found. Please add a new doctor to get started.</p>
+  </div>
 </div>

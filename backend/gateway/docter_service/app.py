@@ -11,7 +11,15 @@ dotenv_path = os.path.join(os.path.dirname(__file__), '..', '.env')
 load_dotenv(dotenv_path=dotenv_path)
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:4200"}})
+
+# Updated CORS configuration to allow requests from both frontend and gateway
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost:4200", "http://localhost:5000"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 # Shared DB setup
 current_dir = os.path.dirname(os.path.abspath(__file__))
