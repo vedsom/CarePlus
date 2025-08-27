@@ -7,6 +7,7 @@
       <option value="">All Categories</option>
       <option value="Pathology">Pathology</option>
       <option value="Radiology">Radiology</option>
+      <option value="Cardiology">Cardiology</option>
     </select>
   </div>
 
@@ -20,12 +21,14 @@
             <strong>Category:</strong> {{test.category}} <br>
             <strong>Price:</strong> ₹{{test.price}}
           </p>
-          <button class="btn btn-success w-100" [routerLink]="['/patient/labs/book', test.id]">
+          <button class="btn btn-success w-100" (click)="bookTest(test)">
   Book Test
 </button>
         </div>
       </div>
     </div>
   </div>
-  <a routerLink="/patient/lab-cart" class="btn btn-success mt-3">Go to Cart</a>
+  <a routerLink="/patient/lab-cart" class="btn btn-success mt-3">
+  Go to Cart
+</a>
 </div>

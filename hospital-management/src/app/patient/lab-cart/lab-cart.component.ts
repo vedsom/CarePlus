@@ -3,7 +3,8 @@ import { LabCartService, LabTest } from '../services/lab-cart.service';
 
 @Component({
   selector: 'app-lab-cart',
-  templateUrl: './lab-cart.component.html'
+  templateUrl: './lab-cart.component.html',
+  styleUrls: ['./lab-cart.component.css']
 })
 export class LabCartComponent {
   cart: LabTest[] = [];

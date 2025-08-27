@@ -27,7 +27,8 @@ def create_booking():
     if request.method == 'OPTIONS':
         return '', 200
     
-    user_id = get_jwt_identity()   # Extracted from token
+    user_id = int(get_jwt_identity())
+   # Extracted from token
     data = request.json
     booking = LabBooking(
         testName=data.get("testName"),
@@ -49,7 +50,8 @@ def get_bookings():
     if request.method == 'OPTIONS':
         return '', 200
     
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
+
     bookings = LabBooking.query.filter_by(user_id=user_id).all()
     return jsonify([b.to_dict() for b in bookings]), 200
 
@@ -60,8 +62,8 @@ def get_bookings():
 def update_booking(booking_id):
     if request.method == 'OPTIONS':
         return '', 200
-    
-    user_id = get_jwt_identity()
+
+    user_id = int(get_jwt_identity())
     booking = LabBooking.query.get_or_404(booking_id)
     
     if booking.user_id != user_id:
@@ -84,7 +86,8 @@ def delete_booking(booking_id):
     if request.method == 'OPTIONS':
         return '', 200
     
-    user_id = get_jwt_identity()
+    user_id = int(get_jwt_identity())
+
     booking = LabBooking.query.get_or_404(booking_id)
     
     if booking.user_id != user_id:

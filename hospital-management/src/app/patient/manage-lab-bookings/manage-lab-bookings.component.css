@@ -314,6 +314,14 @@
   margin: 0 0.25rem;
 }
 
+.actions-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem; /* Adds a nice space between the buttons */
+  flex-wrap: nowrap; /* This is the key: it prevents the buttons from wrapping */
+}
+
 .action-btn::before {
   content: '';
   position: absolute;

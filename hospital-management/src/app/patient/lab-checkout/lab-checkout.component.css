@@ -1,0 +1,149 @@
+/* General Styling & Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Main Container & Component-Scoped Variables */
+.container {
+  --primary-color: #1976d2;
+  --primary-color-dark: #1565c0;
+  --secondary-color: #6c757d;
+  --secondary-color-dark: #5a6268;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --container-bg: #ffffff;
+  --border-color: #dee2e6;
+  --shadow: 0 10px 30px rgba(25, 118, 210, 0.12);
+
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 2.5rem !important;
+  background-color: var(--container-bg);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  font-family: 'Inter', sans-serif;
+  border-top: 5px solid var(--primary-color);
+}
+
+/* Page Header */
+h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 2.5rem !important;
+}
+
+/* Table Styling */
+.table {
+  width: 100%;
+  margin-bottom: 2rem;
+  border-collapse: collapse;
+}
+
+.table thead {
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.table th {
+  text-align: left;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  padding: 1.25rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 1rem;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table td:last-child {
+  text-align: right;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Total Section */
+h4 {
+  text-align: right;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 2px dashed var(--border-color);
+}
+
+/* Action Buttons Container */
+.d-flex {
+  display: flex;
+  gap: 1rem !important;
+  margin-top: 2.5rem !important;
+}
+
+.flex-fill {
+  flex: 1 1 auto;
+}
+
+/* General Button Styling */
+.btn {
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+/* Primary Button (Confirm & Pay) */
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-color-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 7px 20px rgba(25, 118, 210, 0.3);
+}
+
+/* Secondary Button (Download Bill) */
+.btn-secondary {
+  background-color: #f8f9fa;
+  color: var(--secondary-color);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+  color: var(--secondary-color-dark);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+  .container {
+    padding: 1.5rem !important;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  .d-flex {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

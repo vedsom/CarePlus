@@ -1,5 +1,25 @@
 <div class="container py-4">
   <h2>Checkout</h2>
-  <p>Total Amount: <strong>₹ {{ total }}</strong></p>
-  <button class="btn btn-primary w-100" (click)="confirmBooking()">Confirm & Pay</button>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Test</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of cart">
+        <td>{{ item.name }}</td>
+        <td>₹ {{ item.price }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Total: ₹ {{ total }}</h4>
+
+  <div class="d-flex gap-2 mt-3">
+    <button class="btn btn-primary flex-fill" (click)="confirmBooking()">Confirm & Pay</button>
+    <button class="btn btn-secondary flex-fill" (click)="downloadBill()">Download Bill (PDF)</button>
+  </div>
 </div>

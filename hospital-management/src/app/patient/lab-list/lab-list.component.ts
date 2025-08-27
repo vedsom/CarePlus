@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { LabCartService } from '../services/lab-cart.service';
 import { LabService, LabTest } from '../services/lab.service'; // Import service and interface
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-lab-list',
-  templateUrl: './lab-list.component.html'
+  templateUrl: './lab-list.component.html',
+  styleUrls: ['./lab-list.component.css']
 })
 export class LabListComponent implements OnInit { // Implement OnInit
   selectedCategory = '';
   labTests: LabTest[] = []; // Start with an empty array
 
-  constructor(private cartService: LabCartService, private labService: LabService) {}
+  constructor(private cartService: LabCartService, private labService: LabService, private router: Router) {}
   
   ngOnInit(): void {
     // Fetch tests when the component loads
@@ -24,9 +25,12 @@ export class LabListComponent implements OnInit { // Implement OnInit
       !this.selectedCategory || t.category === this.selectedCategory
     );
   }
-  
-  addToCart(test: LabTest) {
-    this.cartService.addToCart(test);
-    alert(`${test.name} added to cart`);
-  }
+
+  bookTest(test: LabTest) {
+  // 1. Add test to cart
+  this.cartService.addToCart(test);
+
+  // 2. Navigate to booking form
+  this.router.navigate(['/patient/labs/book', test.id]);
+}
 }

@@ -11,7 +11,8 @@ interface LabTest {
 
 @Component({
   selector: 'app-lab-book-slot',
-  templateUrl: './lab-book-slot.component.html'
+  templateUrl: './lab-book-slot.component.html',
+  styleUrls: ['./lab-book-slot.component.css']
 })
 export class LabBookSlotComponent implements OnInit {
   test!: LabTest;

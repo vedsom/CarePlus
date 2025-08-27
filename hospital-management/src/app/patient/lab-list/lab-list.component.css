@@ -1,0 +1,426 @@
+/* ===============================================
+   Lab Test Booking - Premium UI Design
+   Theme: White & #1976d2 
+   =============================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.container {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  position: relative;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(25, 118, 210, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(66, 165, 245, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===============================================
+   MAIN HEADING
+   =============================================== */
+h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1976d2;
+  margin-bottom: 2rem;
+  text-shadow: 0 2px 15px rgba(25, 118, 210, 0.3);
+  position: relative;
+  z-index: 1;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #1976d2, #42a5f5, #1976d2);
+  border-radius: 2px;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes fadeInDown {
+  0% { opacity: 0; transform: translateY(-30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===============================================
+   CATEGORY FILTER
+   =============================================== */
+.mb-3 {
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.form-select {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(25, 118, 210, 0.2);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  box-shadow: 
+    0 4px 15px rgba(25, 118, 210, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.form-select:focus {
+  border-color: #1976d2;
+  box-shadow: 
+    0 0 0 3px rgba(25, 118, 210, 0.2),
+    0 8px 25px rgba(25, 118, 210, 0.15);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.form-select:hover {
+  border-color: rgba(25, 118, 210, 0.4);
+  transform: translateY(-1px);
+}
+
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ===============================================
+   TEST CARDS GRID
+   =============================================== */
+.row {
+  position: relative;
+  z-index: 1;
+}
+
+.col-md-3 {
+  animation: fadeInUp 0.8s ease-out calc(0.4s + var(--delay, 0s)) both;
+}
+
+.col-md-3:nth-child(1) { --delay: 0s; }
+.col-md-3:nth-child(2) { --delay: 0.1s; }
+.col-md-3:nth-child(3) { --delay: 0.2s; }
+.col-md-3:nth-child(4) { --delay: 0.3s; }
+.col-md-3:nth-child(n+5) { --delay: 0.4s; }
+
+/* ===============================================
+   TEST CARDS
+   =============================================== */
+.card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(25, 118, 210, 0.1);
+  border-radius: 20px;
+  box-shadow: 
+    0 10px 30px rgba(25, 118, 210, 0.1),
+    0 1px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #1976d2, #42a5f5, #1976d2);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 20px 40px rgba(25, 118, 210, 0.2),
+    0 1px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  border-color: rgba(25, 118, 210, 0.3);
+}
+
+.card:hover::before {
+  animation-duration: 1.5s;
+}
+
+/* ===============================================
+   CARD BODY
+   =============================================== */
+.card-body {
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1976d2;
+  margin-bottom: 1rem;
+  text-shadow: 0 1px 3px rgba(25, 118, 210, 0.2);
+  position: relative;
+}
+
+.card-title::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, #1976d2, #42a5f5);
+  border-radius: 1px;
+  transition: width 0.3s ease;
+}
+
+.card:hover .card-title::after {
+  width: 60px;
+}
+
+.card-text {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.card-text strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* ===============================================
+   BOOK TEST BUTTON
+   =============================================== */
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+
+.btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #1976d2, #1565c0);
+  color: white;
+  box-shadow: 
+    0 4px 15px rgba(25, 118, 210, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #1565c0, #0d47a1);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px rgba(25, 118, 210, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.btn-success:active {
+  transform: translateY(0);
+}
+
+/* ===============================================
+   CART BUTTON
+   =============================================== */
+.mt-3 {
+  margin-top: 2rem !important;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.btn.mt-3 {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  box-shadow: 
+    0 6px 20px rgba(76, 175, 80, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn.mt-3:hover {
+  background: linear-gradient(135deg, #45a049, #388e3c);
+  transform: translateY(-3px);
+  box-shadow: 
+    0 10px 30px rgba(76, 175, 80, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* ===============================================
+   RESPONSIVE DESIGN
+   =============================================== */
+@media (max-width: 1200px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem 0.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  .form-select {
+    width: 80% !important;
+  }
+
+  .col-md-3 {
+    margin-bottom: 1.5rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+  .card-text {
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-select {
+    width: 95% !important;
+    font-size: 0.9rem;
+  }
+
+  .card {
+    border-radius: 15px;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .btn.mt-3 {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+/* ===============================================
+   LOADING ANIMATIONS
+   =============================================== */
+.card.loading {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: cardLoad 0.6s ease-out forwards;
+}
+
+@keyframes cardLoad {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================================
+   ACCESSIBILITY
+   =============================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.btn:focus,
+.form-select:focus {
+  outline: 3px solid rgba(25, 118, 210, 0.5);
+  outline-offset: 2px;
+}
+
+/* ===============================================
+   PRINT STYLES
+   =============================================== */
+@media print {
+  .container {
+    background: white;
+  }
+
+  .container::before {
+    display: none;
+  }
+
+  .btn {
+    display: none;
+  }
+}
