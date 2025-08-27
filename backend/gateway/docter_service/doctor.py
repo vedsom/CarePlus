@@ -110,15 +110,21 @@ def dashboard():
 @doctor_bp.route("/appointments", methods=["GET"])
 @jwt_required()
 def get_appointments():
-    doctor_id = get_jwt_identity()
+    doctor_id = get_jwt_identity() # This gets the doctor's ID from their token
+
+    # Query appointments filtering by the logged-in doctor's ID
     appointments = Appointment.query.filter_by(doctor_id=doctor_id).all()
-    result = [{
-        "id": a.id,
-        "date": str(a.date),
-        "time": a.time,
-        "status": a.status,
-        "patient_name": a.patient.name if a.patient else "N/A"
-    } for a in appointments]
+
+    # Convert each appointment object to a dictionary for the JSON response
+    result = []
+    for a in appointments:
+        result.append({
+            "id": a.id,
+            "date": a.date.isoformat(), # Use isoformat for consistency
+            "time": a.time,
+            "status": a.status,
+            "patient_name": a.patient.name if a.patient else "N/A" # Get name from relationship
+        })
     return jsonify(result)
 
 # Update Appointment Status
@@ -246,3 +252,10 @@ def search_medicines():
 
     results = Medicine.query.filter(Medicine.name.ilike(f"%{query}%")).all()
     return jsonify([{"id": m.id, "name": m.name} for m in results])
+
+@doctor_bp.route("/appointments/<int:id>", methods=["GET"])
+@jwt_required()
+def get_appointment_detail(id):
+    doctor_id = get_jwt_identity()
+    appointment = Appointment.query.filter_by(id=id, doctor_id=doctor_id).first_or_404()
+    return jsonify(appointment.to_dict()) # Assuming you have a to_dict() method

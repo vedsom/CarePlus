@@ -30,12 +30,15 @@ class Patient(db.Model):
     prescriptions = db.relationship("Prescription", back_populates="patient")
 
 
+# In doctor_service/models.py
+
 class Appointment(db.Model):
     __tablename__ = "appointments"
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), default="Pending")
+    diseaseDescription = db.Column(db.String(255), nullable=True) # Make sure this line exists
 
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"))
     patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"))
@@ -43,12 +46,25 @@ class Appointment(db.Model):
     doctor = db.relationship("Doctor", back_populates="appointments")
     patient = db.relationship("Patient", back_populates="appointments")
 
+    # --- ADD THIS METHOD ---
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "patient_name": self.patient.name if self.patient else "N/A",
+            "doctor_id": self.doctor_id,
+            "doctor_name": self.doctor.name if self.doctor else "N/A",
+            "date": self.date.isoformat(),
+            "time": self.time,
+            "status": self.status,
+            "diseaseDescription": self.diseaseDescription
+        }
+
 
 class Prescription(db.Model):
     __tablename__ = "prescriptions"
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    date = db.Column(db.Date, default=datetime.utcnow)
+    date = db.Column(db.Date, default=lambda: datetime.now(timezone.utc).date())
 
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"))
     patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"))

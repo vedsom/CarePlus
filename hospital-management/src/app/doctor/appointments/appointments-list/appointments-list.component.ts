@@ -4,7 +4,8 @@ import { DoctorAppointmentService } from '../../services/doctor-appointment.serv
 
 @Component({
   selector: 'app-appointments-list',
-  templateUrl: './appointments-list.component.html'
+  templateUrl: './appointments-list.component.html',
+  styleUrls: ['./appointments-list.component.css']
 })
 export class AppointmentsListComponent implements OnInit {
   appointments: any[] = [];

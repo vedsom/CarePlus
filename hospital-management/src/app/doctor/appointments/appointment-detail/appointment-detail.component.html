@@ -1,15 +1,49 @@
-<div class="card shadow-sm" *ngIf="appointment">
-  <div class="card-header bg-info text-white">
-    <h5>Appointment Detail</h5>
+<!-- Loading State -->
+<div *ngIf="isLoading" class="text-center py-5">
+  <div class="spinner-border text-primary" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p class="mt-2">Loading appointment details...</p>
+</div>
+
+<!-- Main Content -->
+<div class="card shadow-sm" *ngIf="!isLoading && appointment">
+  <div class="card-header bg-primary text-white">
+    <h5>Appointment Detail for {{ appointment.patient_name }}</h5>
   </div>
   <div class="card-body">
-    <p><strong>Patient:</strong> {{ appointment.patientName }}</p>
-    <p><strong>Date:</strong> {{ appointment.date | date:'short' }}</p>
-    <p><strong>Status:</strong> {{ appointment.status }}</p>
-    <p><strong>Notes:</strong> {{ appointment.notes }}</p>
+    <p><strong>Patient:</strong> {{ appointment.patient_name }}</p>
+    <p><strong>Date:</strong> {{ appointment.date | date:'fullDate' }} at {{ appointment.time }}</p>
+    <p><strong>Status:</strong> 
+      <span class="badge" [ngClass]="{
+        'bg-success': appointment.status === 'Confirmed',
+        'bg-secondary': appointment.status === 'Completed',
+        'bg-warning text-dark': appointment.status === 'Pending',
+        'bg-danger': appointment.status === 'Cancelled'
+      }">
+        {{ appointment.status }}
+      </span>
+    </p>
+    <p><strong>Reason:</strong> {{ appointment.diseaseDescription }}</p>
 
-    <button class="btn btn-secondary" routerLink="/doctor/appointments">
-      Back to List
-    </button>
+    <hr>
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-between align-items-center">
+      <button class="btn btn-secondary" routerLink="/doctor/appointments">
+        Back to List
+      </button>
+      
+      <!-- Show confirm/cancel buttons only if the status is Pending -->
+      <div *ngIf="appointment.status === 'Pending'" class="d-flex gap-2">
+        <button class="btn btn-success" (click)="updateStatus('Confirmed')">Confirm Appointment</button>
+        <button class="btn btn-danger" (click)="updateStatus('Cancelled')">Cancel Appointment</button>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- Error/Not Found State -->
+<div *ngIf="!isLoading && !appointment" class="alert alert-warning">
+  Appointment not found or could not be loaded.
 </div>

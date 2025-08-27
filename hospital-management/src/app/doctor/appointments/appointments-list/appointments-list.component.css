@@ -1,0 +1,106 @@
+/* General Styling & Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Main Container & Component-Scoped Variables */
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  padding: 2rem;
+}
+
+.card {
+  --primary-color: #1976d2;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --border-color: #dee2e6;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+
+  border: none;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* Card Header */
+.card-header {
+  background-color: var(--primary-color) !important;
+  padding: 1.5rem;
+}
+
+.card-header h5 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+}
+
+/* Card Body */
+.card-body {
+  padding: 0; /* Remove padding to allow table to span full width */
+}
+
+/* Loading and Empty States */
+.text-center.py-5 {
+  padding: 4rem 1rem !important;
+  color: var(--text-secondary);
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  color: var(--primary-color) !important;
+}
+
+/* Table Styling */
+.table {
+  margin-bottom: 0; /* Remove default margin */
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1rem 1.5rem;
+}
+
+.table tbody td {
+  padding: 1rem 1.5rem;
+  vertical-align: middle;
+}
+
+.table-hover tbody tr {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+/* Status Badge */
+.badge {
+  font-size: 0.85rem;
+  padding: 0.5em 0.9em;
+  border-radius: 50px;
+  font-weight: 600;
+}
+
+/* Action Button */
+.btn-outline-primary {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.text-end {
+  text-align: right;
+}

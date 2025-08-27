@@ -15,6 +15,11 @@ export class DoctorAppointmentService {
     return this.http.get(this.apiUrl);
   }
 
+  getAppointmentById(id: number): Observable<any> {
+    // The backend route for this will be /api/doctor/appointments/{id}
+    return this.http.get(`${this.apiUrl}/${id}`);
+  }
+
   // Update appointment status (e.g. Completed, Cancelled)
   updateAppointment(id: number, status: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, { status });

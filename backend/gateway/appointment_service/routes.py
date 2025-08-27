@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from models import db, Appointment
 from functools import wraps
@@ -31,26 +32,35 @@ appointments_bp = Blueprint("appointments", __name__)
 
 # PROTECTED ROUTE: Create appointment
 @appointments_bp.route("/appointments", methods=["POST"])
-@token_required  # Apply decorator
-def create_appointment(current_user):  # Accept user data from token
+@token_required
+def create_appointment(current_user):
     data = request.json
-    
-    existing = Appointment.query.filter_by(doctorId=data["doctorId"], date=data["date"], time=data["time"]).first()
+    patient_id_from_token = current_user['user_id']
+
+    # Convert string date from frontend to a Python date object
+    appointment_date = datetime.strptime(data["date"], '%Y-%m-%d').date()
+
+    # Check for existing appointments
+    existing = Appointment.query.filter_by(
+        doctor_id=data["doctorId"],
+        date=appointment_date,
+        time=data["time"]
+    ).first()
     if existing:
         return jsonify({"error": "Doctor not available at this slot"}), 409
 
+    # Create the appointment using the new model structure
     appt = Appointment(
-        patientName=data["patientName"],
-        doctorId=data["doctorId"],
-        doctorName=data["doctorName"],
-        date=data["date"],
+        patient_id=patient_id_from_token, # Use patient_id from the token
+        doctor_id=data["doctorId"],       # Use doctor_id from the form
+        date=appointment_date,
         time=data["time"],
         diseaseDescription=data.get("diseaseDescription", ""),
-        user_id=current_user['user_id']  # Get user ID from token
+        status="Pending" # Set a default status
     )
     db.session.add(appt)
     db.session.commit()
-    return jsonify({"message": "Appointment booked", "appointment": appt.to_dict()}), 201
+    return jsonify({"message": "Appointment booked"}), 201
 
 
 # PROTECTED ROUTE: Get appointments for the logged-in user
@@ -59,7 +69,8 @@ def create_appointment(current_user):  # Accept user data from token
 def get_appointments(current_user): # Accept user data
     user_id = current_user['user_id']
     # Filter by user ID to only show their appointments
-    appts = Appointment.query.filter_by(user_id=user_id).all()
+    # Change it to use patient_id:
+    appts = Appointment.query.filter_by(patient_id=user_id).all()
     return jsonify([a.to_dict() for a in appts])
 
 
