@@ -114,6 +114,22 @@ def labs_proxy(path):
 def health_check():
     return jsonify({"status": "Gateway is running", "services": SERVICE_URLS}), 200
 
+@app.route("/api/referrals", defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+@app.route("/api/referrals/<path:path>", methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
+def referrals_proxy(path):
+    # For GET requests without path, route to get referrals
+    if request.method == 'GET' and not path:
+        full_path = "/api/doctor/referrals"
+    # For POST requests without path, route to create referrals  
+    elif request.method == 'POST' and not path:
+        full_path = "/api/doctor/referrals"
+    # For other paths, include the path
+    else:
+        full_path = f"/api/doctor/referrals/{path}" if path else "/api/doctor/referrals"
+    
+    print(f"Referrals proxy: {request.method} -> {full_path}")
+    return forward_request(SERVICE_URLS['doctor_admin'], full_path)
+
 if __name__ == "__main__":
     print("Starting gateway on port 5000...")
     print(f"Service URLs: {SERVICE_URLS}")

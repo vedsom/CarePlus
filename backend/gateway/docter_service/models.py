@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
 
 db = SQLAlchemy()
 
@@ -60,8 +60,11 @@ class Referral(db.Model):
     __tablename__ = "referrals"
     id = db.Column(db.Integer, primary_key=True)
     hospital = db.Column(db.String(255), nullable=False)
-    date = db.Column(db.Date, default=datetime.utcnow)
-
+    date = db.Column(db.Date, default=lambda: datetime.now(timezone.utc))
+    patient_name = db.Column(db.String(120), nullable=False)   # NEW
+    disease_description = db.Column(db.Text, nullable=False)   # NEW
+    referred_by = db.Column(db.String(120), nullable=False)    # NEW
+    referred_to = db.Column(db.String(120), nullable=False)    # NEW
     # Foreign keys to link the referral
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"))
     patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"))

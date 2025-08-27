@@ -153,10 +153,15 @@ def create_prescription():
 def add_referral():
     data = request.get_json()
     doctor_id = get_jwt_identity()
+
     new_referral = Referral(
         patient_id=data["patient_id"],
-        doctor_id=doctor_id,
-        hospital=data["hospital"]
+        patient_name=data["patient_name"],
+        disease_description=data["disease_description"],
+        referred_by=data["referred_by"],
+        referred_to=data["referred_to"],
+        hospital=data["hospital"],
+        doctor_id=doctor_id
     )
     db.session.add(new_referral)
     db.session.commit()
@@ -174,3 +179,24 @@ def earnings():
     ).count()
     total_earnings = completed_appointments * fee_per_consult
     return jsonify({"earnings": total_earnings})
+
+
+@doctor_bp.route('/referrals', methods=['GET'])
+@jwt_required()
+def get_referrals():
+    doctor_id = get_jwt_identity()
+    referrals = Referral.query.filter_by(doctor_id=doctor_id).all()
+    
+    result = []
+    for ref in referrals:
+        result.append({
+            "id": ref.id,
+            "patient_name": ref.patient_name,
+            "referred_to": ref.referred_to,
+            "reason": ref.disease_description,
+            "date": ref.date.isoformat() if ref.date else None,
+            "hospital": ref.hospital,
+            "referredBy": ref.referred_by
+        })
+    
+    return jsonify(result), 200

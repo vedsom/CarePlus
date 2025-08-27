@@ -1,0 +1,29 @@
+<div class="container py-4">
+  <h2 class="mb-4">Referred Patients</h2>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-primary"></div>
+    <p>Loading referrals...</p>
+  </div>
+
+  <div class="row" *ngIf="!loading && referrals.length > 0">
+    <div class="col-md-4 mb-3" *ngFor="let ref of referrals">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ ref.patient_name }}</h5>
+          <p class="card-text"><strong>Hospital:</strong> {{ ref.hospital }}</p>
+          <p class="card-text"><strong>Referred To:</strong> {{ ref.referred_to }}</p>
+          <p class="card-text"><strong>Referred By:</strong> {{ ref.referredBy }}</p>
+          <p class="card-text"><strong>Disease:</strong> {{ ref.reason }}</p>
+          <p class="card-text text-muted">
+            <small>{{ ref.date | date:'medium' }}</small>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && referrals.length === 0" class="alert alert-info">
+    No referred patients found.
+  </div>
+</div>

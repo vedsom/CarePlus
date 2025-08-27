@@ -11,6 +11,7 @@ import { DoctorRoutingModule } from './doctor-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CalendarModule } from 'angular-calendar';
+import { ReferredPatientsComponent } from './referred-patients/referred-patients.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { CalendarModule } from 'angular-calendar';
     ReferralsComponent,
     PrescriptionsComponent,
     ProfileComponent,
-    EarningsComponent
+    EarningsComponent,
+    ReferredPatientsComponent
   ],
   imports: [
     CommonModule,

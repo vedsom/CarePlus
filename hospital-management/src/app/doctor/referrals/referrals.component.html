@@ -1,14 +1,37 @@
 <div class="container mt-3">
   <h3>Refer Patient</h3>
   <form (ngSubmit)="addReferral()">
+    
     <div class="mb-3">
       <label>Patient ID</label>
       <input class="form-control" [(ngModel)]="referral.patient_id" name="patientId" required>
     </div>
+
+    <div class="mb-3">
+      <label>Patient Name</label>
+      <input class="form-control" [(ngModel)]="referral.patient_name" name="patientName" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Disease Description</label>
+      <textarea class="form-control" [(ngModel)]="referral.disease_description" name="reason" required></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label>Referred By (Doctor)</label>
+      <input class="form-control" [(ngModel)]="referral.referred_by" name="referredBy" required>
+    </div>
+
+    <div class="mb-3">
+      <label>Referred To (Doctor / Dept)</label>
+      <input class="form-control" [(ngModel)]="referral.referred_to" name="referredTo" required>
+    </div>
+
     <div class="mb-3">
       <label>Hospital</label>
       <input class="form-control" [(ngModel)]="referral.hospital" name="hospital" required>
     </div>
+
     <button class="btn btn-primary" type="submit">Refer</button>
   </form>
 </div>

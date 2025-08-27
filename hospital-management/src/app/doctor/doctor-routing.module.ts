@@ -7,6 +7,7 @@ import { ReferralsComponent } from './referrals/referrals.component';
 import { PrescriptionsComponent } from './prescriptions/prescriptions.component';
 import { ProfileComponent } from './profile/profile.component';
 import { EarningsComponent } from './earnings/earnings.component';
+import { ReferredPatientsComponent } from './referred-patients/referred-patients.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,7 @@ const routes: Routes = [
       { path: 'appointments/:id', component: AppointmentDetailComponent },
       { path: 'prescriptions', component: PrescriptionsComponent },
       { path: 'referrals', component: ReferralsComponent },
+      { path: 'referred-patients', component: ReferredPatientsComponent },
       { path: 'profile', component: ProfileComponent },
       { path: 'earnings', component: EarningsComponent },
       // If the path is just /doctor, redirect to the appointments list by default.
