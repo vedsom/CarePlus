@@ -1,0 +1,176 @@
+/* General Styling & Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Main Container & Component-Scoped Variables */
+.container {
+  --primary-color: #1976d2;
+  --primary-color-dark: #1565c0;
+  --secondary-color: #6c757d;
+  --success-color: #2e7d32;
+  --success-color-dark: #1b5e20;
+  --danger-color: #d32f2f;
+  --danger-color-light: #fdecea;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --container-bg: #ffffff;
+  --border-color: #ced4da;
+  --shadow: 0 8px 24px rgba(25, 118, 210, 0.1);
+
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2.5rem !important;
+  background-color: var(--container-bg);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Page Header */
+h3, h4 {
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+h3 {
+  font-size: 2.25rem;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.75rem;
+}
+
+/* Form Element Styling */
+.form-control {
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.25);
+  outline: none;
+}
+
+label {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+/* Autocomplete Search Results */
+.position-relative .list-group {
+  z-index: 1000;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border: 1px solid var(--border-color);
+}
+
+.list-group-item-action {
+  cursor: pointer;
+}
+
+.list-group-item-action:hover {
+  background-color: #e3f2fd;
+  color: var(--primary-color);
+}
+
+/* Timing Checkboxes */
+.timing-group {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.timing-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.timing-group input[type="checkbox"] {
+  width: 1.25em;
+  height: 1.25em;
+  accent-color: var(--primary-color);
+}
+
+/* Added Medicines List */
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: #f8f9fa;
+  color: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  width: 100%;
+}
+
+.btn-secondary:hover {
+  background-color: #e9ecef;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-color-dark);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: var(--success-color-dark);
+}
+
+.btn-danger.btn-sm {
+  background-color: var(--danger-color-light);
+  color: var(--danger-color);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.875rem;
+}
+
+.btn-danger.btn-sm:hover {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+  .container {
+    padding: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.75rem;
+  }
+}

@@ -6,18 +6,26 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PrescriptionService {
-  private apiUrl = 'http://localhost:5000/api/doctor/prescriptions';
+  // keep only the base doctor URL
+  private apiUrl = 'http://localhost:5000/api/doctor';
 
   constructor(private http: HttpClient) {}
 
-  createPrescription(patientId: number, content: string): Observable<any> {
-    return this.http.post(this.apiUrl, {
+  // create prescription
+  createPrescription(patientId: number, medicines: any[]): Observable<any> {
+    return this.http.post(`${this.apiUrl}/prescriptions`, {
       patient_id: patientId,
-      content: content
+      medicines: medicines
     });
   }
 
-  addPrescription(patientId: number, content: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, { patient_id: patientId, content });
+  // search medicines
+  searchMedicines(query: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/medicines?query=${query}`);
+  }
+
+  // add prescription (duplicate of createPrescription, but keeping if you need it separately)
+  addPrescription(prescription: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/prescriptions`, prescription);
   }
 }

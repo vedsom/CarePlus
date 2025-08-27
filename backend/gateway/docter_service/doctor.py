@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import date, datetime
-from models import db, Doctor, Appointment, Prescription, Patient, Referral, DoctorScheduleEvent
+from models import Medicine, PrescriptionMedicine, db, Doctor, Appointment, Prescription, Patient, Referral, DoctorScheduleEvent
 
 doctor_bp = Blueprint("doctor", __name__)
 
@@ -136,16 +136,26 @@ def update_appointment(id):
 @doctor_bp.route("/prescriptions", methods=["POST"])
 @jwt_required()
 def create_prescription():
-    data = request.json
-    doctor_id = get_jwt_identity()
-    prescription = Prescription(
-        patient_id=data["patient_id"],
-        doctor_id=doctor_id,
-        content=data["content"]
+    data = request.get_json()
+
+    patient_id = data.get("patient_id")
+    medicines = data.get("medicines", [])
+
+    if not patient_id or not medicines:
+        return jsonify({"error": "patient_id and medicines are required"}), 400
+
+    # Store medicines as JSON string (so you can parse it later)
+    import json
+    new_prescription = Prescription(
+        patient_id=patient_id,
+        content=json.dumps(medicines)  
     )
-    db.session.add(prescription)
+
+    db.session.add(new_prescription)
     db.session.commit()
-    return jsonify({"msg": "Prescription added"})
+
+    return jsonify({"message": "Prescription saved successfully"})
+
 
 # Add Referral
 @doctor_bp.route('/referrals', methods=['POST'])
@@ -200,3 +210,39 @@ def get_referrals():
         })
     
     return jsonify(result), 200
+
+@doctor_bp.route("/prescriptions", methods=["POST"])
+@jwt_required()
+def add_prescription():
+    data = request.json
+    doctor_id = get_jwt_identity()
+
+    prescription = Prescription(
+        patient_id=data["patient_id"],
+        doctor_id=doctor_id,
+        content=",".join([m["medicine_name"] for m in data["medicines"]])  # optional summary
+    )
+    db.session.add(prescription)
+    db.session.flush()
+
+    for med in data.get("medicines", []):
+        pm = PrescriptionMedicine(
+            prescription_id=prescription.id,
+            medicine_name=med["medicine_name"],
+            dosage=med["dosage"],
+            timing=med["timing"]
+        )
+        db.session.add(pm)
+
+    db.session.commit()
+    return jsonify({"message": "Prescription added!"})
+
+@doctor_bp.route("/medicines", methods=["GET"])
+@jwt_required(optional=True)  # allow even without login, or remove if you want secure
+def search_medicines():
+    query = request.args.get("query", "").strip()
+    if not query:
+        return jsonify([])
+
+    results = Medicine.query.filter(Medicine.name.ilike(f"%{query}%")).all()
+    return jsonify([{"id": m.id, "name": m.name} for m in results])

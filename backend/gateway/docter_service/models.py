@@ -56,6 +56,23 @@ class Prescription(db.Model):
     doctor = db.relationship("Doctor", back_populates="prescriptions")
     patient = db.relationship("Patient", back_populates="prescriptions")
 
+class PrescriptionMedicine(db.Model):
+    __tablename__ = "prescription_medicines"
+    id = db.Column(db.Integer, primary_key=True)
+    prescription_id = db.Column(db.Integer, db.ForeignKey("prescriptions.id"), nullable=False)
+    medicine_id = db.Column(db.Integer, db.ForeignKey("medicines.id"), nullable=False)
+    dosage = db.Column(db.String(50), nullable=False)   # e.g., "500mg"
+    timing = db.Column(db.String(100), nullable=True)   # e.g., "Morning & Night"
+
+    prescription = db.relationship("Prescription", backref="prescription_medicines")
+    medicine = db.relationship("Medicine")
+
+class Medicine(db.Model):
+    __tablename__ = "medicines"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    description = db.Column(db.Text, nullable=True) 
+
 class Referral(db.Model):
     __tablename__ = "referrals"
     id = db.Column(db.Integer, primary_key=True)
