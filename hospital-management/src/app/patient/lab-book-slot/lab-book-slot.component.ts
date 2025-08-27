@@ -16,6 +16,7 @@ interface LabTest {
 export class LabBookSlotComponent implements OnInit {
   test!: LabTest;
   testId!: number;
+  labTests: LabTest[] = [];
 
   booking = {
     date: '',
@@ -23,41 +24,74 @@ export class LabBookSlotComponent implements OnInit {
     type: 'Lab Visit' // default
   };
 
-  constructor(private route: ActivatedRoute, private router: Router, private labService: LabService) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router, 
+    private labService: LabService
+  ) {}
 
   ngOnInit() {
     this.testId = Number(this.route.snapshot.paramMap.get('id'));
 
-    // ❗️Later we’ll fetch from backend, for now hardcoded list
-    const mockTests: LabTest[] = [
-      { id: 1, name: 'Blood Test', category: 'Pathology', price: 200 },
-      { id: 2, name: 'X-Ray Chest', category: 'Radiology', price: 500 },
-      { id: 3, name: 'MRI Brain', category: 'Radiology', price: 2500 },
-      { id: 4, name: 'Urine Test', category: 'Pathology', price: 150 }
-    ];
-    this.test = mockTests.find(t => t.id === this.testId)!;
+    // FIXED: Fetch lab tests from backend instead of hardcoded data
+    this.labService.getLabTests().subscribe({
+      next: (tests) => {
+        this.labTests = tests;
+        this.test = tests.find(t => t.id === this.testId)!;
+        
+        if (!this.test) {
+          console.error('Test not found');
+          this.router.navigate(['/patient/labs']);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch lab tests', err);
+        // Fallback to hardcoded data if backend fails
+        this.labTests = [
+          { id: 1, name: 'Blood Test', category: 'Pathology', price: 200 },
+          { id: 2, name: 'X-Ray Chest', category: 'Radiology', price: 500 },
+          { id: 3, name: 'MRI Brain', category: 'Radiology', price: 2500 },
+          { id: 4, name: 'Urine Test', category: 'Pathology', price: 150 }
+        ];
+        this.test = this.labTests.find(t => t.id === this.testId)!;
+      }
+    });
   }
 
-confirmBooking() {
-  const newBooking = {
-    testName: this.test.name,
-    date: this.booking.date,
-    timeSlot: this.booking.timeSlot,
-    type: this.booking.type,
-    status: 'Confirmed'
-  };
-
-  this.labService.createBooking(newBooking).subscribe({
-    next: (res) => {
-      alert(`Booking Confirmed!\nTest: ${this.test.name}\nDate: ${this.booking.date}\nTime: ${this.booking.timeSlot}`);
-      this.router.navigate(['/patient/labs/manage']);
-    },
-    error: (err) => {
-      console.error('Booking failed', err);
-      alert('Failed to book slot, please try again');
+  confirmBooking() {
+    // Validation
+    if (!this.booking.date || !this.booking.timeSlot) {
+      alert('Please select both date and time slot');
+      return;
     }
-  });
-}
 
+    const newBooking = {
+      testName: this.test.name,
+      date: this.booking.date,
+      timeSlot: this.booking.timeSlot,
+      type: this.booking.type,
+      status: 'Confirmed'
+    };
 
+    this.labService.createBooking(newBooking).subscribe({
+      next: (res) => {
+        console.log('Booking successful', res);
+        alert(`Booking Confirmed!\nTest: ${this.test.name}\nDate: ${this.booking.date}\nTime: ${this.booking.timeSlot}`);
+        this.router.navigate(['/patient/labs/manage']);
+      },
+      error: (err) => {
+        console.error('Booking failed', err);
+        
+        // More detailed error handling
+        if (err.status === 401) {
+          alert('Please login to book a lab test');
+          this.router.navigate(['/auth/login']);
+        } else if (err.status === 0) {
+          alert('Cannot connect to server. Please check if the gateway is running on port 5000');
+        } else {
+          alert('Failed to book slot, please try again');
+        }
+      }
+    });
+  }
 }

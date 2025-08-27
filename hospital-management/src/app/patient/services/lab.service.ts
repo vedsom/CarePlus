@@ -23,21 +23,21 @@ export interface LabTest {
   providedIn: 'root'
 })
 export class LabService {
-  // Fix 1: Update API URL to match Flask app.py url_prefix
-  private apiUrl = 'http://127.0.0.1:5003/api/labs';
+  // FIXED: Use gateway URL instead of direct service URL
+  private apiUrl = 'http://localhost:5000/api/labs';
 
   constructor(private http: HttpClient) {}
 
   // Helper method to get auth headers
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token'); // Assuming you store JWT token here
+    const token = localStorage.getItem('token');
     return new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': token ? `Bearer ${token}` : ''
     });
   }
 
-  // Fix 2: Add method to get lab tests (public route)
+  // Public route to get lab tests
   getLabTests(): Observable<LabTest[]> {
     return this.http.get<LabTest[]>(`${this.apiUrl}/tests`);
   }
@@ -49,15 +49,14 @@ export class LabService {
     });
   }
 
-  createBooking(booking: Partial<LabBooking>): Observable<LabBooking> {
-    return this.http.post<LabBooking>(this.apiUrl, booking, { 
+  createBooking(booking: Partial<LabBooking>): Observable<any> {
+    return this.http.post<any>(this.apiUrl, booking, { 
       headers: this.getAuthHeaders() 
     });
   }
 
-  // Fix 3: Add missing methods that your component calls
-  updateBooking(booking_id: number, payload: Partial<LabBooking>): Observable<LabBooking> {
-    return this.http.put<LabBooking>(`${this.apiUrl}/${booking_id}`, payload, { 
+  updateBooking(booking_id: number, payload: Partial<LabBooking>): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${booking_id}`, payload, { 
       headers: this.getAuthHeaders() 
     });
   }
@@ -69,7 +68,7 @@ export class LabService {
   }
 
   // Legacy method names for backward compatibility
-  rescheduleBooking(booking_id: number, payload: Partial<LabBooking>): Observable<LabBooking> {
+  rescheduleBooking(booking_id: number, payload: Partial<LabBooking>): Observable<any> {
     return this.updateBooking(booking_id, payload);
   }
 

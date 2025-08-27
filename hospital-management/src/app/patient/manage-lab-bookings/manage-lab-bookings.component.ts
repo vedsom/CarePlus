@@ -3,9 +3,8 @@ import { LabService, LabBooking } from '../services/lab.service';
 
 @Component({
   selector: 'app-manage-lab-bookings',
-  templateUrl: './manage-lab-bookings.component.html'
-  // You should also add a styleUrls property if you have a CSS file
-  // styleUrls: ['./manage-lab-bookings.component.css']
+  templateUrl: './manage-lab-bookings.component.html',
+  styleUrls: ['./manage-lab-bookings.component.css']
 })
 export class ManageLabBookingsComponent implements OnInit {
   bookings: LabBooking[] = [];
