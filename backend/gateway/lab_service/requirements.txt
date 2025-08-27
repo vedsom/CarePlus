@@ -1,5 +1,5 @@
 Flask
-flask-cors
-flask_sqlalchemy
+Flask-Cors
+Flask-SQLAlchemy
 python-dotenv
-PyJWT
+Flask-JWT-Extended

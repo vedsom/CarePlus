@@ -1,13 +1,79 @@
-version: "3.9"
-services:
-  frontend:
-    build: ./hospital-management
-    ports:
-      - "4200:80"
-    depends_on:
-      - backend
+version: '3.8'
 
-  backend:
-    build: ./backend/gateway
+services:
+  # Frontend Angular Service
+  frontend:
+    build:
+      context: ./hospital-management
+    ports:
+      - "4200:80" # Access the frontend on http://localhost:4200
+
+  # API Gateway Service
+  gateway:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      # The gateway has no specific requirements, so we point to an empty file
+      # If it had dependencies, you would create a requirements.txt for it.
+      args:
+        REQUIREMENTS_FILE: ./gateway/requirements.txt
     ports:
       - "5000:5000"
+    command: python ./gateway/gateway.py
+    volumes:
+      - ./backend/instance:/app/instance # Share the database
+    env_file:
+      - ./backend/.env # Share environment variables
+
+  # Appointment Service
+  appointment_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        REQUIREMENTS_FILE: ./gateway/appointment_service/requirements.txt
+    command: python ./gateway/appointment_service/app.py
+    volumes:
+      - ./backend/instance:/app/instance
+    env_file:
+      - ./backend/.env
+
+  # Doctor Service (Note the spelling 'docter' to match your folder)
+  docter_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        REQUIREMENTS_FILE: ./gateway/docter_service/requirements.txt
+    command: python ./gateway/docter_service/app.py
+    volumes:
+      - ./backend/instance:/app/instance
+    env_file:
+      - ./backend/.env
+
+  # Auth Service
+  auth_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        REQUIREMENTS_FILE: ./gateway/auth_service/requirements.txt
+    command: python ./gateway/auth_service/app.py
+    volumes:
+      - ./backend/instance:/app/instance
+    env_file:
+      - ./backend/.env
+
+  # Lab Service
+  lab_service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        REQUIREMENTS_FILE: ./gateway/lab_service/requirements.txt
+    command: python ./gateway/lab_service/app.py
+    volumes:
+      - ./backend/instance:/app/instance
+    env_file:
+      - ./backend/.env
+
