@@ -13,17 +13,15 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-      # The gateway has no specific requirements, so we point to an empty file
-      # If it had dependencies, you would create a requirements.txt for it.
       args:
         REQUIREMENTS_FILE: ./gateway/requirements.txt
     ports:
       - "5000:5000"
     command: python ./gateway/gateway.py
     volumes:
-      - ./backend/instance:/app/instance # Share the database
+      - ./backend/instance:/app/instance 
     env_file:
-      - ./backend/.env # Share environment variables
+      - ./backend/.env 
 
   # Appointment Service
   appointment_service:
@@ -38,7 +36,7 @@ services:
     env_file:
       - ./backend/.env
 
-  # Doctor Service (Note the spelling 'docter' to match your folder)
+  # Doctor Service 
   docter_service:
     build:
       context: ./backend
