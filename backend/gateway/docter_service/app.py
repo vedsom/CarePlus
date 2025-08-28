@@ -1,9 +1,9 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from models import Medicine, db
+from models import db
 from doctor import doctor_bp
-from admin import admin_bp   # NEW
+from admin import admin_bp
 import os
 from dotenv import load_dotenv
 
@@ -12,7 +12,6 @@ load_dotenv(dotenv_path=dotenv_path)
 
 app = Flask(__name__)
 
-# Updated CORS configuration to allow requests from both frontend and gateway
 CORS(app, resources={
     r"/api/*": {
         "origins": ["http://localhost:4200", "http://localhost:5000"],
@@ -34,44 +33,11 @@ app.config["JWT_SECRET_KEY"] = os.environ.get('SECRET_KEY')
 db.init_app(app)
 jwt = JWTManager(app)
 
-# register blueprints
+# Register blueprints
 app.register_blueprint(doctor_bp, url_prefix="/api/doctor")
 app.register_blueprint(admin_bp, url_prefix="/api/admin")
 
+# --- Seeding logic has been removed ---
+
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-        if not Medicine.query.first():
-            default_meds = [
-                "Amoxicillin",     
-                "Betadine",        
-                "Cetirizine",      
-                "Doxycycline",     
-                "Erythromycin",    
-                "Furosemide",      
-                "Gabapentin",      
-                "Hydroxychloroquine", 
-                "Ibuprofen",       
-                "Josamycin",       
-                "Ketorolac",       
-                "Loratadine",      
-                "Metformin",       
-                "Naproxen",        
-                "Omeprazole",      
-                "Paracetamol",     
-                "Quinine",         
-                "Ranitidine",      
-                "Salbutamol",      
-                "Tetracycline",    
-                "Ursodiol",        
-                "Valacyclovir",    
-                "Warfarin",        
-                "Xylometazoline",  
-                "Yohimbine",       
-                "Zidovudine",      
-                "5-Fluorouracil"   
-            ]
-            for name in default_meds:
-                db.session.add(Medicine(name=name))
-            db.session.commit()
-    app.run(debug=True, port=5004)
+    app.run(host='0.0.0.0', debug=True, port=5004)

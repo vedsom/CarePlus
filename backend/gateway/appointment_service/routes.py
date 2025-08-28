@@ -5,8 +5,6 @@ from functools import wraps
 import jwt
 import os
 
-# --- 1. ADD ALL OF THIS DECORATOR CODE ---
-# This key must be identical to the one in your auth_service
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your_default_fallback_secret_key')
 
 def token_required(f):
@@ -24,23 +22,16 @@ def token_required(f):
             return jsonify({'message': 'Token is invalid!', 'error': str(e)}), 401
         return f(current_user, *args, **kwargs)
     return decorated
-# --- END OF DECORATOR CODE ---
-
 
 appointments_bp = Blueprint("appointments", __name__)
 
-
-# PROTECTED ROUTE: Create appointment
 @appointments_bp.route("/appointments", methods=["POST"])
 @token_required
 def create_appointment(current_user):
     data = request.json
     patient_id_from_token = current_user['user_id']
-
-    # Convert string date from frontend to a Python date object
     appointment_date = datetime.strptime(data["date"], '%Y-%m-%d').date()
 
-    # Check for existing appointments
     existing = Appointment.query.filter_by(
         doctor_id=data["doctorId"],
         date=appointment_date,
@@ -49,87 +40,93 @@ def create_appointment(current_user):
     if existing:
         return jsonify({"error": "Doctor not available at this slot"}), 409
 
-    # Create the appointment using the new model structure
     appt = Appointment(
-        patient_id=patient_id_from_token, # Use patient_id from the token
-        doctor_id=data["doctorId"],       # Use doctor_id from the form
+        patient_id=patient_id_from_token,
+        doctor_id=data["doctorId"],
         date=appointment_date,
         time=data["time"],
         diseaseDescription=data.get("diseaseDescription", ""),
-        status="Pending" # Set a default status
+        status="Pending"
     )
     db.session.add(appt)
     db.session.commit()
     return jsonify({"message": "Appointment booked"}), 201
 
-
-# PROTECTED ROUTE: Get appointments for the logged-in user
 @appointments_bp.route("/appointments", methods=["GET"])
-@token_required # Apply decorator
-def get_appointments(current_user): # Accept user data
+@token_required
+def get_appointments(current_user):
     user_id = current_user['user_id']
-    # Filter by user ID to only show their appointments
-    # Change it to use patient_id:
     appts = Appointment.query.filter_by(patient_id=user_id).all()
     return jsonify([a.to_dict() for a in appts])
 
-
-# PROTECTED ROUTE: Update appointment
 @appointments_bp.route("/appointments/<int:id>", methods=["PUT"])
-@token_required # Apply decorator
-def update_appointment(current_user, id): # Accept user data
+@token_required
+def update_appointment(current_user, id):
     appt = Appointment.query.get_or_404(id)
-    
-    # SECURITY CHECK: User can only modify their own appointments
-    if appt.user_id != current_user['user_id']:
+
+    # CORRECTED: Use patient_id
+    if appt.patient_id != current_user['user_id']:
         return jsonify({"error": "Permission denied"}), 403
 
     data = request.json
-    appt.patientName = data.get("patientName", appt.patientName)
-    appt.doctorName = data.get("doctorName", appt.doctorName)
-    appt.doctorId = data.get("doctorId", appt.doctorId)
-    appt.date = data.get("date", appt.date)
+    # Note: The frontend doesn't send these fields for rescheduling,
+    # but the logic is here if you add them later.
+    appt.date = datetime.strptime(data.get("date", appt.date.isoformat()), '%Y-%m-%d').date()
     appt.time = data.get("time", appt.time)
     appt.diseaseDescription = data.get("diseaseDescription", appt.diseaseDescription)
     db.session.commit()
     return jsonify({"message": "Appointment updated"})
 
-
-# PROTECTED ROUTE: Delete appointment
 @appointments_bp.route("/appointments/<int:id>", methods=["DELETE"])
-@token_required # Apply decorator
-def delete_appointment(current_user, id): # Accept user data
+@token_required
+def delete_appointment(current_user, id):
     appt = Appointment.query.get_or_404(id)
 
-    # SECURITY CHECK: User can only delete their own appointments
-    if appt.user_id != current_user['user_id']:
+    # CORRECTED: Use patient_id
+    if appt.patient_id != current_user['user_id']:
         return jsonify({"error": "Permission denied"}), 403
 
     db.session.delete(appt)
     db.session.commit()
     return jsonify({"message": "Appointment deleted"})
 
+# --- Doctor-specific routes (for doctor portal) ---
+
 @appointments_bp.route("/doctor/appointments", methods=["GET"])
 @token_required
 def get_doctor_appointments(current_user):
-    doctor_id = current_user['user_id']  # or doctor_id if JWT stores differently
-    appts = Appointment.query.filter_by(doctorId=doctor_id).all()
+    doctor_id = current_user['user_id']
+    # CORRECTED: Use doctor_id
+    appts = Appointment.query.filter_by(doctor_id=doctor_id).all()
     return jsonify([a.to_dict() for a in appts])
 
-# Update appointment status by doctor (confirm/cancel)
 @appointments_bp.route("/doctor/appointments/<int:id>", methods=["PUT"])
 @token_required
 def update_doctor_appointment(current_user, id):
     doctor_id = current_user['user_id']
     appt = Appointment.query.get_or_404(id)
     
-    if appt.doctorId != doctor_id:
+    # CORRECTED: Use doctor_id
+    if appt.doctor_id != doctor_id:
         return jsonify({"error": "Permission denied"}), 403
     
     data = request.json
-    appt.cancelled = data.get("cancelled", appt.cancelled)
+    # CORRECTED: Use status field
+    appt.status = data.get("status", appt.status)
     db.session.commit()
     return jsonify({"message": "Appointment updated by doctor"})
 
-# Note: The PATCH route for cancelling can be combined with the PUT route for updating if desired.
-# It should also be protected with the decorator and the security check.
+@appointments_bp.route("/appointments/<int:id>/cancel", methods=["PUT"])
+@token_required
+def cancel_appointment(current_user, id):
+    appt = Appointment.query.get_or_404(id)
+
+    # Security check: User can only cancel their own appointments
+    if appt.patient_id != current_user['user_id']:
+        return jsonify({"error": "Permission denied"}), 403
+
+    # Update the cancelled status
+    appt.cancelled = True
+    db.session.commit()
+    
+    return jsonify({"message": "Appointment cancelled successfully"})

@@ -3,134 +3,70 @@ from flask_cors import CORS
 import requests
 
 app = Flask(__name__)
+# Apply CORS to the entire app
+CORS(app)
 
-# --- ENHANCED CORS SETUP ---
-CORS(
-    app,
-    resources={r"/*": {"origins": ["http://localhost:4200", "http://127.0.0.1:4200"]}},
-    supports_credentials=True,
-    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    expose_headers=["Content-Type", "Authorization"]
-)
-
-# --- SERVICE URLS ---
 SERVICE_URLS = {
-    'auth': 'http://localhost:5001',
-    'appointments': 'http://localhost:5002',
-    'labs': 'http://localhost:5003',
-    'doctor_admin': 'http://localhost:5004'
+    "auth": "http://auth_service:5001",
+    "appointments": "http://appointment_service:5002",
+    "labs": "http://lab_service:5003",
+    "doctor": "http://docter_service:5004"
 }
 
-# --- HELPER FUNCTION TO FORWARD REQUESTS ---
-def forward_request(service_url, path, is_stream=False):
-    # Copy all headers except Host
-    headers = {key: value for (key, value) in request.headers if key.lower() != 'host'}
+# --- THE FIX ---
+# This function will run before every request. It catches the browser's
+# preflight 'OPTIONS' request and responds immediately with a success status,
+# which is what the browser needs to see to proceed with the actual POST request.
+@app.before_request
+def handle_preflight():
+    if request.method.upper() == 'OPTIONS':
+        return Response(status=200)
 
-    # Handle OPTIONS requests immediately
-    if request.method == "OPTIONS":
-        response = Response()
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
-        response.headers.add("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
-        return response
+# This route specifically handles /auth/register, /auth/login, etc.
+@app.route('/auth/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def auth_gateway(path):
+    full_path = f"/auth/{path}"
+    return forward_request('auth', full_path)
+
+
+# This dynamic route handles all other services
+@app.route('/api/<service>', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/api/<service>/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def api_gateway(service, path):
+    full_path = f"/api/{service}"
+    if path:
+        full_path += f"/{path}"
+    return forward_request(service, full_path)
+
+
+# A helper function to avoid repeating code
+def forward_request(service_name, full_path):
+    if service_name not in SERVICE_URLS:
+        return jsonify({"error": "Service not found"}), 404
+
+    url = f"{SERVICE_URLS[service_name]}{full_path}"
+    headers = {key: value for (key, value) in request.headers if key != 'Host'}
 
     try:
-        # Get request data
-        json_data = None
-        if request.method in ['POST', 'PUT'] and request.content_type and 'application/json' in request.content_type:
-            json_data = request.get_json(silent=True)
-
-        print(f"Forwarding {request.method} {service_url}{path}")
-        if json_data:
-            print(f"Request data: {json_data}")
-
-        response = requests.request(
-            method=request.method,
-            url=f"{service_url}{path}",
-            headers=headers,
-            json=json_data,
-            params=request.args,
-            stream=is_stream,
-            timeout=30  # Add timeout
-        )
-
-        print(f"Response status: {response.status_code}")
-
-        if is_stream:
-            return Response(
-                response.iter_content(chunk_size=1024),
-                content_type=response.headers.get("Content-Type", "application/pdf"),
-                status=response.status_code
+        json_data = request.get_json(silent=True)
+        if json_data is not None:
+            resp = requests.request(
+                method=request.method, url=url, headers=headers, json=json_data,
+                params=request.args, timeout=10
             )
-
-        # For JSON or other non-streaming responses
-        content_type = response.headers.get("Content-Type", "")
-        if "application/json" in content_type:
-            return jsonify(response.json()), response.status_code
         else:
-            return response.content, response.status_code
+            resp = requests.request(
+                method=request.method, url=url, headers=headers, data=request.get_data(),
+                params=request.args, timeout=10
+            )
+        
+        response = Response(resp.content, resp.status_code, resp.raw.headers.items())
+        return response
 
     except requests.exceptions.RequestException as e:
-        print(f"Request failed: {e}")
-        error_message = f"Could not connect to the service at {service_url}. Error: {str(e)}"
-        return jsonify({"error": error_message}), 503
+        print(f"Error connecting to {service_name}: {e}")
+        return jsonify({"error": f"Could not connect to the {service_name} service."}), 503
 
-# --- PROXY ROUTES ---
-@app.route("/auth/<path:path>", methods=["GET", "POST", "OPTIONS"])
-def auth_proxy(path):
-    return forward_request(SERVICE_URLS['auth'], f"/auth/{path}")
 
-# Combined proxy for both /api/admin and /api/doctor
-@app.route("/api/<any(admin, doctor):service>/<path:path>", methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
-def doctor_admin_proxy(service, path):
-    full_path = f"/api/{service}/{path}"
-    
-    # Special handling for PDF export from the admin service
-    if service == 'admin' and path == 'doctors/pdf':
-        return forward_request(SERVICE_URLS['doctor_admin'], full_path, is_stream=True)
-    
-    return forward_request(SERVICE_URLS['doctor_admin'], full_path)
-
-@app.route("/api/appointments", defaults={'path': ''}, methods=['GET', 'POST', 'OPTIONS'])
-@app.route("/api/appointments/<path:path>", methods=['GET', 'PUT', 'DELETE', 'OPTIONS'])
-def appointments_proxy(path):
-    full_path = f"/{path}" if path else ""
-    return forward_request(SERVICE_URLS['appointments'], f"/api/appointments{full_path}")
-
-# FIXED: Enhanced lab proxy with better debugging
-@app.route("/api/labs", defaults={'path': ''}, methods=['GET', 'POST', 'OPTIONS'])
-@app.route("/api/labs/<path:path>", methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
-def labs_proxy(path):
-    full_path = f"/{path}" if path else ""
-    target_url = f"/api/labs{full_path}"
-    
-    print(f"Lab proxy: {request.method} {target_url}")
-    
-    return forward_request(SERVICE_URLS['labs'], target_url)
-
-# Add a health check endpoint
-@app.route("/health", methods=["GET"])
-def health_check():
-    return jsonify({"status": "Gateway is running", "services": SERVICE_URLS}), 200
-
-@app.route("/api/referrals", defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
-@app.route("/api/referrals/<path:path>", methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
-def referrals_proxy(path):
-    # For GET requests without path, route to get referrals
-    if request.method == 'GET' and not path:
-        full_path = "/api/doctor/referrals"
-    # For POST requests without path, route to create referrals  
-    elif request.method == 'POST' and not path:
-        full_path = "/api/doctor/referrals"
-    # For other paths, include the path
-    else:
-        full_path = f"/api/doctor/referrals/{path}" if path else "/api/doctor/referrals"
-    
-    print(f"Referrals proxy: {request.method} -> {full_path}")
-    return forward_request(SERVICE_URLS['doctor_admin'], full_path)
-
-if __name__ == "__main__":
-    print("Starting gateway on port 5000...")
-    print(f"Service URLs: {SERVICE_URLS}")
-    app.run(port=5000, debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -42,7 +42,7 @@ class Appointment(db.Model):
 
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"))
     patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"))
-
+    cancelled = db.Column(db.Boolean, default=False) 
     doctor = db.relationship("Doctor", back_populates="appointments")
     patient = db.relationship("Patient", back_populates="appointments")
 
@@ -56,7 +56,8 @@ class Appointment(db.Model):
             "date": self.date.isoformat(),
             "time": self.time,
             "status": self.status,
-            "diseaseDescription": self.diseaseDescription
+            "diseaseDescription": self.diseaseDescription,
+            "cancelled": self.cancelled
         }
 
 

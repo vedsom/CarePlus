@@ -62,6 +62,19 @@ export class ManageAppointmentComponent implements OnInit {
     this.editedAppointment = {};
   }
 
+  cancelAppointment(id: number | undefined) {
+    if (!id) return;
+    if (confirm('Are you sure you want to cancel this appointment?')) {
+      // Calls the new cancelAppointment method in the service
+      this.appointmentService.cancelAppointment(id).subscribe({
+        next: () => {
+          this.loadAppointments(); // Reload to see the change
+        },
+        error: (err) => console.error('Error cancelling appointment:', err)
+      });
+    }
+  }
+
   // ✅ Method to delete/cancel an appointment
   deleteAppointment(id: number | undefined) {
     if (!id) return;

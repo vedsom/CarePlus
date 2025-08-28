@@ -76,7 +76,7 @@ class Appointment(db.Model):
     time = db.Column(db.String(20), nullable=False)
     status = db.Column(db.String(20), default="Pending")
     diseaseDescription = db.Column(db.String(255), nullable=True) # Added from your patient service
-
+    cancelled = db.Column(db.Boolean, default=False) 
     # Use Foreign Keys for relationships
     doctor_id = db.Column(db.Integer, db.ForeignKey("doctors.id"), nullable=False)
     patient_id = db.Column(db.Integer, db.ForeignKey("patients.id"), nullable=False)
@@ -94,5 +94,6 @@ class Appointment(db.Model):
             "date": self.date.isoformat(),
             "time": self.time,
             "status": self.status,
-            "diseaseDescription": self.diseaseDescription
+            "diseaseDescription": self.diseaseDescription,
+            "cancelled": self.cancelled
         }

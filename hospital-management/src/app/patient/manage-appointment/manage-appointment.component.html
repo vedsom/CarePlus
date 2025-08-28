@@ -76,7 +76,7 @@
         <!-- Actions -->
         <div class="appointment-actions" *ngIf="!appt.cancelled">
           <button class="action-btn btn-primary" (click)="startEdit(appt)">Reschedule</button>
-          <button class="action-btn btn-danger" (click)="deleteAppointment(appt.id)">Cancel</button>
+          <button class="action-btn btn-danger" (click)="cancelAppointment(appt.id)">Cancel</button>
         </div>
 
         <!-- Edit Form -->

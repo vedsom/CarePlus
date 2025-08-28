@@ -54,4 +54,9 @@ export class AppointmentService {
   deleteAppointment(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  cancelAppointment(id: number): Observable<any> {
+    // Calls the new backend route we created
+    return this.http.put(`${this.apiUrl}/${id}/cancel`, {});
+  }
 }
