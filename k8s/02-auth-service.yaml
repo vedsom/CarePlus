@@ -20,11 +20,11 @@ spec:
     spec:
       containers:
         - name: auth-service
-          image: abhi9701/hospital-auth-service:latest # Your image from Docker Hub
+          image: abhi9701/hospital-auth-service:latest 
           command: ["python"]
           args: ["./gateway/auth_service/app.py"]
           ports:
-            - containerPort: 5001 # The port the service runs on inside the container
+            - containerPort: 5001 
           env:
             - name: SECRET_KEY
               valueFrom:
@@ -42,9 +42,7 @@ spec:
 ---
 
 # --- Service ---
-# The Service gives our Deployment a stable network address inside the cluster.
-# Other services (like the gateway) will use this Service name to find and
-# communicate with the auth_service containers.
+
 apiVersion: v1
 kind: Service
 metadata:

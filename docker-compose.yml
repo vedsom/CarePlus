@@ -1,12 +1,11 @@
-version: '3.8'
-
 services:
   # Frontend Angular Service
   frontend:
     build:
       context: ./hospital-management
+    image: abhi9701/hospital-frontend # <-- ADDED THIS LINE
     ports:
-      - "4200:80" # Access the frontend on http://localhost:4200
+      - "4200:80"
 
   # API Gateway Service
   gateway:
@@ -15,13 +14,14 @@ services:
       dockerfile: Dockerfile
       args:
         REQUIREMENTS_FILE: ./gateway/requirements.txt
+    image: abhi9701/hospital-gateway # <-- ADDED THIS LINE
     ports:
       - "5000:5000"
     command: python ./gateway/gateway.py
     volumes:
-      - ./backend/instance:/app/instance 
+      - ./backend/instance:/app/instance
     env_file:
-      - ./backend/.env 
+      - ./backend/.env
 
   # Appointment Service
   appointment_service:
@@ -30,19 +30,21 @@ services:
       dockerfile: Dockerfile
       args:
         REQUIREMENTS_FILE: ./gateway/appointment_service/requirements.txt
+    image: abhi9701/hospital-appointment-service # <-- ADDED THIS LINE
     command: python ./gateway/appointment_service/app.py
     volumes:
       - ./backend/instance:/app/instance
     env_file:
       - ./backend/.env
 
-  # Doctor Service 
+  # Doctor Service
   docter_service:
     build:
       context: ./backend
       dockerfile: Dockerfile
       args:
         REQUIREMENTS_FILE: ./gateway/docter_service/requirements.txt
+    image: abhi9701/hospital-docter-service # <-- ADDED THIS LINE
     command: python ./gateway/docter_service/app.py
     volumes:
       - ./backend/instance:/app/instance
@@ -56,6 +58,7 @@ services:
       dockerfile: Dockerfile
       args:
         REQUIREMENTS_FILE: ./gateway/auth_service/requirements.txt
+    image: abhi9701/hospital-auth-service # <-- ADDED THIS LINE
     command: python ./gateway/auth_service/app.py
     volumes:
       - ./backend/instance:/app/instance
@@ -69,9 +72,9 @@ services:
       dockerfile: Dockerfile
       args:
         REQUIREMENTS_FILE: ./gateway/lab_service/requirements.txt
+    image: abhi9701/hospital-lab-service # <-- ADDED THIS LINE
     command: python ./gateway/lab_service/app.py
     volumes:
       - ./backend/instance:/app/instance
     env_file:
       - ./backend/.env
-

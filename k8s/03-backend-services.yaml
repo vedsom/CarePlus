@@ -19,7 +19,7 @@ spec:
         - name: appointment-service
           image: abhi9701/hospital-appointment-service:latest
           command: ["python"]
-          args: ["appointment_service/app.py"]
+          args: ["gateway/appointment_service/app.py"]
           ports:
             - containerPort: 5002
           env:
@@ -28,6 +28,16 @@ spec:
                 secretKeyRef:
                   name: hospital-secret
                   key: SECRET_KEY
+          # --- THIS IS THE FIX ---
+          # Mount the shared database volume, just like in the auth-service.
+          volumeMounts:
+            - name: db-storage
+              mountPath: /app/instance
+      # Define the volume to be mounted.
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: hospital-db-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -62,7 +72,7 @@ spec:
         - name: docter-service
           image: abhi9701/hospital-docter-service:latest
           command: ["python"]
-          args: ["doctor_service/app.py"]
+          args: ["gateway/docter_service/app.py"]
           ports:
             - containerPort: 5004
           env:
@@ -71,6 +81,16 @@ spec:
                 secretKeyRef:
                   name: hospital-secret
                   key: SECRET_KEY
+          # --- THIS IS THE FIX ---
+          # Mount the shared database volume.
+          volumeMounts:
+            - name: db-storage
+              mountPath: /app/instance
+      # Define the volume to be mounted.
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: hospital-db-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -105,7 +125,7 @@ spec:
         - name: lab-service
           image: abhi9701/hospital-lab-service:latest
           command: ["python"]
-          args: ["lab_service/app.py"]
+          args: ["gateway/lab_service/app.py"]
           ports:
             - containerPort: 5003
           env:
@@ -114,6 +134,16 @@ spec:
                 secretKeyRef:
                   name: hospital-secret
                   key: SECRET_KEY
+          # --- THIS IS THE FIX ---
+          # Mount the shared database volume.
+          volumeMounts:
+            - name: db-storage
+              mountPath: /app/instance
+      # Define the volume to be mounted.
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: hospital-db-pvc
 ---
 apiVersion: v1
 kind: Service

@@ -21,7 +21,9 @@ spec:
         - name: gateway
           image: abhi9701/hospital-gateway:latest
           command: ["python"]
-          args: ["gateway/app.py"]
+          # --- THIS IS THE FIX ---
+          # The filename is gateway.py, not app.py
+          args: ["gateway/gateway.py"]
           ports:
             - containerPort: 5000
           env:
@@ -30,8 +32,6 @@ spec:
                 secretKeyRef:
                   name: hospital-secret
                   key: SECRET_KEY
-            # We could add service URLs here, but the gateway code
-            # already has them hardcoded, which is fine for this setup.
 
 ---
 
@@ -49,6 +49,5 @@ spec:
   type: LoadBalancer # Exposes the service externally
   ports:
     - protocol: TCP
-      port: 5000       # The port to expose externally
+      port: 5000      # The port to expose externally
       targetPort: 5000 # The port on the container
-
