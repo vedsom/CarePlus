@@ -1,0 +1,54 @@
+# This file defines the Deployment and Service for our API Gateway.
+
+# --- Deployment ---
+# This runs the gateway container, which is responsible for routing
+# incoming requests to the correct microservice.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: abhi9701/hospital-gateway:latest
+          command: ["python"]
+          args: ["gateway/app.py"]
+          ports:
+            - containerPort: 5000
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hospital-secret
+                  key: SECRET_KEY
+            # We could add service URLs here, but the gateway code
+            # already has them hardcoded, which is fine for this setup.
+
+---
+
+# --- Service ---
+# This Service is special. It's of type "LoadBalancer", which means
+# Kubernetes will expose it to the outside world. This is how your
+# frontend will be able to send API requests to the gateway.
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  selector:
+    app: gateway
+  type: LoadBalancer # Exposes the service externally
+  ports:
+    - protocol: TCP
+      port: 5000       # The port to expose externally
+      targetPort: 5000 # The port on the container
+

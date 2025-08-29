@@ -1,0 +1,59 @@
+# This file defines the Deployment and Service for our auth_service.
+
+# --- Deployment ---
+# The Deployment tells Kubernetes how to run our application. It defines
+# which Docker image to use, how many container replicas to run, and what
+# environment variables to set.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: abhi9701/hospital-auth-service:latest # Your image from Docker Hub
+          command: ["python"]
+          args: ["./gateway/auth_service/app.py"]
+          ports:
+            - containerPort: 5001 # The port the service runs on inside the container
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hospital-secret # Reference the Secret we created
+                  key: SECRET_KEY
+          volumeMounts:
+            - name: db-storage
+              mountPath: /app/instance # Mount the persistent disk here
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: hospital-db-pvc # Use the PersistentVolumeClaim we created
+
+---
+
+# --- Service ---
+# The Service gives our Deployment a stable network address inside the cluster.
+# Other services (like the gateway) will use this Service name to find and
+# communicate with the auth_service containers.
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 5001       # The port the Service will be available on
+      targetPort: 5001 # The port to forward traffic to on the container
+

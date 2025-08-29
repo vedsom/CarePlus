@@ -1,0 +1,43 @@
+# This file defines the Deployment and Service for our Frontend Angular App.
+
+# --- Deployment ---
+# This runs the Nginx container that serves your built Angular application files.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: abhi9701/hospital-frontend:latest # Your image from Docker Hub
+          ports:
+            - containerPort: 80 # The port Nginx runs on inside the container
+
+---
+
+# --- Service ---
+# This Service is also of type "LoadBalancer". This will expose your
+# Angular application on a port (usually 4200) so you can open it
+# in your web browser.
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  type: LoadBalancer # Exposes the service externally
+  ports:
+    - protocol: TCP
+      port: 80        # The port to expose externally
+      targetPort: 80  # The port on the container
+
